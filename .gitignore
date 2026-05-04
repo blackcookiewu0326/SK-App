@@ -1,0 +1,6 @@
+*.sql
+*.csv
+temp.js
+debug_supabase.js
+.vscode/
+artifacts/

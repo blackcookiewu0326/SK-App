@@ -1,0 +1,3 @@
+// Supabase 連線設定
+const SUPABASE_URL = 'https://aaazsmlgkwynbmzgujip.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFhYXpzbWxna3d5bmJtemd1amlwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc4NjU1NTcsImV4cCI6MjA5MzQ0MTU1N30.UAeXpkdV6XdYebbIfksn38wTkg_WpMx1E8lYp8GepIg';

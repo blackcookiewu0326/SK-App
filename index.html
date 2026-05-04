@@ -1,0 +1,1299 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>SK App — 首頁</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-light: #818cf8;
+            --primary-dark: #4f46e5;
+            --accent: #f59e0b;
+            --bg-dark: #f8fafc;
+            --bg-card: #ffffff;
+            --bg-card-hover: #f1f5f9;
+            --bg-input: #f1f5f9;
+            --text-primary: #1e293b;
+            --text-secondary: #475569;
+            --text-muted: #94a3b8;
+            --border: #e2e8f0;
+            --success: #22c55e;
+            --error: #ef4444;
+            --glass: rgba(255, 255, 255, 0.85);
+            --nav-height: 70px;
+            --header-height: 60px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-primary);
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        /* 背景特效 */
+        .bg-gradient {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            z-index: -1; pointer-events: none;
+            background: radial-gradient(circle at top right, rgba(99, 102, 241, 0.06), transparent 40%),
+                        radial-gradient(circle at bottom left, rgba(245, 158, 11, 0.03), transparent 40%);
+        }
+
+        /* 頂部 Header */
+        header {
+            height: var(--header-height);
+            background: var(--glass);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            z-index: 100;
+        }
+
+        .header-title {
+            font-weight: 700;
+            font-size: 1.2rem;
+            background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .user-name {
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .role-badge {
+            font-size: 0.7rem;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        .role-admin { background: rgba(239, 68, 68, 0.1); color: #dc2626; border: 1px solid rgba(239, 68, 68, 0.2); }
+        .role-staff { background: rgba(245, 158, 11, 0.1); color: #d97706; border: 1px solid rgba(245, 158, 11, 0.2); }
+        .role-member { background: rgba(99, 102, 241, 0.1); color: #4f46e5; border: 1px solid rgba(99, 102, 241, 0.2); }
+
+        .logout-btn {
+            background: none; border: none; color: var(--text-muted); cursor: pointer;
+            font-size: 1.2rem; transition: color 0.2s;
+        }
+        .logout-btn:hover { color: var(--error); }
+
+        /* 主要內容區 */
+        main {
+            flex: 1;
+            margin-top: var(--header-height);
+            margin-bottom: var(--nav-height);
+            overflow-y: auto;
+            position: relative;
+        }
+
+        .tab-content {
+            display: none;
+            padding: 20px;
+            animation: fadeIn 0.3s ease;
+            min-height: 100%;
+        }
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* 底部導覽列 */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0; left: 0; right: 0;
+            height: var(--nav-height);
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-top: 1px solid var(--border);
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding-bottom: env(safe-area-inset-bottom);
+            z-index: 100;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
+        }
+
+        .nav-item {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-muted);
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            height: 100%;
+        }
+
+        .nav-icon {
+            font-size: 1.4rem;
+            margin-bottom: 4px;
+            transition: transform 0.3s;
+        }
+
+        .nav-label {
+            font-size: 0.7rem;
+            font-weight: 500;
+        }
+
+        .nav-item.active {
+            color: var(--primary);
+        }
+
+        .nav-item.active .nav-icon {
+            transform: translateY(-2px) scale(1.1);
+        }
+
+        .nav-item::before {
+            content: '';
+            position: absolute;
+            top: -1px; left: 50%; transform: translateX(-50%);
+            width: 0; height: 3px;
+            background: var(--primary-light);
+            border-radius: 0 0 4px 4px;
+            transition: width 0.3s;
+        }
+        .nav-item.active::before { width: 30px; }
+
+        /* 全域卡片設計 */
+        .card {
+            background: var(--bg-card);
+            border-radius: 16px;
+            padding: 16px;
+            margin-bottom: 16px;
+            border: 1px solid var(--border);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        /* WIP 畫面 */
+        .wip-container {
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+            height: 100%; text-align: center; color: var(--text-muted);
+            padding-top: 20vh;
+        }
+        .wip-icon { font-size: 4rem; margin-bottom: 16px; opacity: 0.5; }
+        
+        /* 載入畫面 */
+        .full-loader {
+            position: fixed; inset: 0;
+            background: #ffffff;
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+            z-index: 9999;
+            transition: opacity 0.5s;
+        }
+        .spinner {
+            width: 40px; height: 40px;
+            border: 4px solid rgba(99, 102, 241, 0.2);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        /* 浮動新增按鈕 */
+        .fab {
+            position: fixed;
+            bottom: calc(var(--nav-height) + 20px + env(safe-area-inset-bottom));
+            right: 20px;
+            width: 56px; height: 56px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white; border: none;
+            font-size: 24px;
+            display: none; align-items: center; justify-content: center;
+            box-shadow: 0 8px 25px rgba(99, 102, 241, 0.5);
+            cursor: pointer; z-index: 90;
+            transition: transform 0.2s;
+        }
+        .fab:hover { transform: scale(1.05); }
+        .fab.visible { display: flex; }
+
+        /* 公告樣式 */
+        .announcement-card {
+            transition: transform 0.2s;
+        }
+        .announcement-card:hover { transform: translateY(-2px); }
+        .announcement-header {
+            display: flex; justify-content: space-between; align-items: flex-start;
+            margin-bottom: 12px;
+        }
+        .announcement-title { font-size: 1.1rem; font-weight: 600; color: var(--text-primary); }
+        .announcement-meta { font-size: 0.75rem; color: var(--text-muted); text-align: right; }
+        .announcement-content { font-size: 0.95rem; color: var(--text-secondary); line-height: 1.6; white-space: pre-wrap;}
+        .announcement-img {
+            width: 100%; max-width: 160px; aspect-ratio: 1 / 1; object-fit: contain; background: #000;
+            border-radius: 12px; margin: 12px auto 0 auto;
+            display: none; border: 1px solid var(--border); cursor: zoom-in;
+        }
+        .announcement-actions {
+            margin-top: 12px; display: flex; gap: 8px; justify-content: flex-end;
+            /* removed display:none to allow members to see the read button */
+        }
+        .action-btn {
+            background: transparent; border: 1px solid var(--border);
+            color: var(--text-secondary); padding: 4px 12px; border-radius: 6px;
+            font-size: 0.8rem; cursor: pointer; transition: all 0.2s;
+        }
+        .action-btn:hover { background: var(--bg-card-hover); color: var(--text-primary); }
+        .action-btn.delete:hover { border-color: var(--error); color: var(--error); }
+
+        /* Modal 樣式 */
+        .modal-overlay {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.4);
+            backdrop-filter: blur(5px); display: none;
+            align-items: center; justify-content: center; z-index: 1000;
+            padding: 20px;
+        }
+        .modal-overlay.active { display: flex; }
+        .modal-card {
+            background: var(--bg-card); border-radius: 20px; width: 100%; max-width: 500px;
+            max-height: 90vh; overflow-y: auto; padding: 24px;
+            border: 1px solid var(--border); box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+            animation: modalPop 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        @keyframes modalPop {
+            from { transform: scale(0.95); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+        .modal-header {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 20px;
+        }
+        .modal-title { font-size: 1.25rem; font-weight: 700; }
+        .modal-close { background: none; border: none; color: var(--text-muted); font-size: 1.5rem; cursor: pointer; }
+        
+        .form-group { margin-bottom: 16px; }
+        .form-label { display: block; font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 6px; }
+        .form-input {
+            width: 100%; padding: 12px; background: var(--bg-input); border: 1px solid var(--border);
+            border-radius: 10px; color: var(--text-primary); font-family: inherit; font-size: 0.95rem;
+            outline: none; transition: border-color 0.2s;
+        }
+        .form-input:focus { border-color: var(--primary); }
+        textarea.form-input { resize: vertical; min-height: 100px; }
+        
+        .btn {
+            width: 100%; padding: 12px; border: none; border-radius: 10px; font-weight: 600;
+            cursor: pointer; font-size: 1rem; transition: transform 0.2s;
+        }
+        .btn-primary { background: linear-gradient(135deg, var(--primary), var(--primary-dark)); color: white; }
+        .btn-primary:active { transform: scale(0.98); }
+
+        /* 考核進度條 (Member) */
+        .progress-section { margin-bottom: 20px; }
+        .progress-header { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 0.9rem;}
+        .progress-title { font-weight: 600; display: flex; align-items: center; gap: 6px;}
+        .progress-status { font-size: 0.8rem; padding: 2px 8px; border-radius: 10px; font-weight: 600; }
+        .status-pass { background: rgba(34, 197, 94, 0.2); color: var(--success); }
+        .status-fail { background: rgba(239, 68, 68, 0.2); color: var(--error); }
+        .status-none { background: rgba(148, 163, 184, 0.2); color: var(--text-muted); }
+        
+        .progress-bar-bg { width: 100%; height: 12px; background: var(--bg-input); border-radius: 6px; overflow: hidden; position: relative;}
+        .progress-bar-fill { height: 100%; background: linear-gradient(90deg, var(--primary), var(--primary-light)); border-radius: 6px; transition: width 0.5s ease-out; width: 0%;}
+        .progress-bar-fill.success { background: linear-gradient(90deg, #16a34a, #4ade80); }
+        
+        .eval-summary { text-align: center; padding: 20px 0; border-top: 1px solid var(--border); margin-top: 20px; }
+        .eval-summary-title { font-size: 1.2rem; font-weight: 700; margin-bottom: 8px;}
+        .eval-summary-text { font-size: 0.9rem; color: var(--text-secondary); }
+
+        /* 考核列表 (Admin) */
+        .member-list-item {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 12px 16px; background: var(--bg-card); border-radius: 12px;
+            margin-bottom: 10px; border: 1px solid var(--border);
+            cursor: pointer; transition: background 0.2s;
+        }
+        .member-list-item:hover { background: var(--bg-card-hover); }
+        .member-info { display: flex; flex-direction: column; gap: 4px; }
+        .member-name { font-weight: 600; font-size: 1rem; }
+        .member-id { font-size: 0.75rem; color: var(--text-muted); }
+        .member-status { display: flex; gap: 6px; }
+        .dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
+        .dot.pass { background: var(--success); box-shadow: 0 0 5px var(--success); }
+        .dot.fail { background: var(--error); }
+
+        /* 遊戲 iframe */
+        #game-frame {
+            width: 100%;
+            height: calc(100vh - var(--header-height) - var(--nav-height));
+            border: none;
+            display: block;
+        }
+        #sec-game { padding: 0; overflow: hidden; }
+
+        /* 切換按鈕 (Toggle) */
+        .eval-toggle {
+            display: flex;
+            background: var(--bg-input);
+            border-radius: 12px;
+            padding: 4px;
+            margin-bottom: 20px;
+        }
+        .eval-toggle-btn {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            background: transparent;
+            color: var(--text-muted);
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .eval-toggle-btn.active {
+            background: var(--bg-card);
+            color: var(--primary);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        
+        /* Lightbox */
+        .lightbox-overlay {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.9);
+            display: none; align-items: center; justify-content: center; z-index: 2000;
+            cursor: zoom-out;
+        }
+        .lightbox-overlay.active { display: flex; }
+        .lightbox-img {
+            max-width: 95%; max-height: 95%; object-fit: contain;
+            border-radius: 8px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            animation: lightboxZoom 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        @keyframes lightboxZoom {
+            from { transform: scale(0.9); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+    </style>
+</head>
+<body>
+    <div class="bg-gradient"></div>
+
+    <!-- 載入畫面 -->
+    <div class="full-loader" id="loader">
+        <div class="spinner"></div>
+        <div style="margin-top: 16px; font-weight: 500; color: var(--text-secondary);" id="loader-text">驗證身分中...</div>
+    </div>
+
+    <!-- 頂部 Header -->
+    <header>
+        <div class="header-title">SK App</div>
+        <div class="user-info">
+            <span class="role-badge" id="header-role">...</span>
+            <span class="user-name" id="header-name">載入中</span>
+            <button class="logout-btn" onclick="handleLogout()" title="登出">🚪</button>
+        </div>
+    </header>
+
+    <!-- 主要內容區 -->
+    <main>
+        <!-- 📢 公告 -->
+        <section id="sec-announcements" class="tab-content active">
+            <div id="announcement-list">
+                <!-- 公告列表由 JS 生成 -->
+                <div style="text-align:center; padding: 40px; color: var(--text-muted);">載入中...</div>
+            </div>
+            <!-- FAB (僅 Admin/Staff) -->
+            <button class="fab" id="fab-add-announcement" onclick="openAnnouncementModal()">➕</button>
+        </section>
+
+        <!-- 📤 上傳 -->
+        <section id="sec-upload" class="tab-content">
+            <div class="wip-container">
+                <div class="wip-icon">📤</div>
+                <h2>上傳區</h2>
+                <p style="margin-top: 8px;">考核圖片上傳功能目前建置中<br>敬請期待！</p>
+            </div>
+        </section>
+
+        <!-- 📝 考核 -->
+        <section id="sec-evaluations" class="tab-content">
+            <!-- Admin/Staff 切換按鈕 -->
+            <div class="eval-toggle" id="eval-toggle-container" style="display: none;">
+                <button class="eval-toggle-btn active" id="toggle-view" onclick="switchEvalMode('view')">👁️ 我的進度</button>
+                <button class="eval-toggle-btn" id="toggle-edit" onclick="switchEvalMode('edit')">⚙️ 考核管理</button>
+            </div>
+
+            <!-- Member 視角 -->
+            <div id="eval-member-view" style="display: none;">
+                <h2 style="margin-bottom: 20px;">我的考核進度</h2>
+                <div class="card">
+                    <div class="progress-section">
+                        <div class="progress-header">
+                            <span class="progress-title">🎯 基本分數</span>
+                            <span class="progress-status" id="status-base">載入中</span>
+                        </div>
+                        <div class="progress-bar-bg"><div class="progress-bar-fill" id="bar-base"></div></div>
+                        <div style="text-align: right; font-size: 0.8rem; margin-top: 4px; color: var(--text-muted);" id="text-base">0 / 0</div>
+                    </div>
+                    
+                    <div class="progress-section">
+                        <div class="progress-header">
+                            <span class="progress-title">💬 互動分數</span>
+                            <span class="progress-status" id="status-interact">載入中</span>
+                        </div>
+                        <div class="progress-bar-bg"><div class="progress-bar-fill" id="bar-interact"></div></div>
+                        <div style="text-align: right; font-size: 0.8rem; margin-top: 4px; color: var(--text-muted);" id="text-interact">0 / 0</div>
+                    </div>
+
+                    <div class="progress-section">
+                        <div class="progress-header">
+                            <span class="progress-title">🤝 團長見面</span>
+                            <span class="progress-status" id="status-meeting">載入中</span>
+                        </div>
+                        <div class="progress-bar-bg"><div class="progress-bar-fill" id="bar-meeting"></div></div>
+                        <div style="text-align: right; font-size: 0.8rem; margin-top: 4px; color: var(--text-muted);" id="text-meeting">0 / 0</div>
+                    </div>
+
+                    <div class="eval-summary">
+                        <div class="eval-summary-title" id="eval-final-title">評估中...</div>
+                        <div class="eval-summary-text" id="eval-final-text">請持續努力達成所有門檻</div>
+                    </div>
+                </div>
+
+                <!-- 歷史紀錄 (Member) -->
+                <div class="card" style="margin-top:0;">
+                    <div style="font-weight:600; margin-bottom:10px;">📋 我的考核紀錄</div>
+                    <div id="member-log-history" style="max-height:300px; overflow-y:auto;">載入中...</div>
+                </div>
+            </div>
+
+            <!-- Admin/Staff 視角 -->
+            <div id="eval-admin-view" style="display: none;">
+                <h2 style="margin-bottom: 16px;">成員考核管理</h2>
+                <div class="input-wrapper" style="margin-bottom: 16px;">
+                    <input type="text" class="form-input" id="eval-search" placeholder="搜尋成員名稱或帳號..." onkeyup="filterMembers()">
+                </div>
+                <div id="member-list">
+                    <!-- 成員列表由 JS 生成 -->
+                </div>
+            </div>
+        </section>
+
+        <!-- 🎰 遊戲 -->
+        <section id="sec-game" class="tab-content">
+            <iframe id="game-frame" src="slot.html" title="Slot Game"></iframe>
+        </section>
+
+        <!-- 🏆 排行 -->
+        <section id="sec-leaderboard" class="tab-content">
+            <div class="wip-container">
+                <div class="wip-icon">🏆</div>
+                <h2>排行榜</h2>
+                <p style="margin-top: 8px;">考核與遊戲排名系統建置中<br>敬請期待！</p>
+            </div>
+        </section>
+    </main>
+
+    <!-- 底部導覽列 -->
+    <nav class="bottom-nav">
+        <div class="nav-item active" onclick="switchTab('announcements', this)">
+            <div class="nav-icon">📢</div>
+            <div class="nav-label">公告</div>
+        </div>
+        <div class="nav-item" onclick="switchTab('upload', this)">
+            <div class="nav-icon">📤</div>
+            <div class="nav-label">上傳</div>
+        </div>
+        <div class="nav-item" onclick="switchTab('evaluations', this)">
+            <div class="nav-icon">📝</div>
+            <div class="nav-label">考核</div>
+        </div>
+        <div class="nav-item" onclick="switchTab('game', this)">
+            <div class="nav-icon">🎰</div>
+            <div class="nav-label">遊戲</div>
+        </div>
+        <div class="nav-item" onclick="switchTab('leaderboard', this)">
+            <div class="nav-icon">🏆</div>
+            <div class="nav-label">排行</div>
+        </div>
+    </nav>
+
+    <!-- 模態框：發布/編輯公告 -->
+    <div class="modal-overlay" id="modal-announcement">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3 class="modal-title" id="ann-modal-title">發布新公告</h3>
+                <button class="modal-close" onclick="closeModal('modal-announcement')">×</button>
+            </div>
+            <input type="hidden" id="ann-id">
+            <div class="form-group">
+                <label class="form-label">標題</label>
+                <input type="text" class="form-input" id="ann-title" placeholder="輸入公告標題">
+            </div>
+            <div class="form-group">
+                <label class="form-label">內容</label>
+                <textarea class="form-input" id="ann-content" placeholder="輸入公告內容..."></textarea>
+            </div>
+            <div class="form-group">
+                <label class="form-label">附加圖片 (選填)</label>
+                <input type="file" class="form-input" id="ann-image" accept="image/*" style="padding: 8px;">
+            </div>
+            <button class="btn btn-primary" onclick="saveAnnouncement()">儲存發布</button>
+        </div>
+    </div>
+
+    <!-- 模態框：編輯成員考核 -->
+    <div class="modal-overlay" id="modal-eval">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3 class="modal-title">考核管理 - <span id="eval-modal-name"></span></h3>
+                <button class="modal-close" onclick="closeModal('modal-eval')">×</button>
+            </div>
+            <input type="hidden" id="eval-user-id">
+
+            <!-- 目前總分摘要 -->
+            <div style="display:flex; gap:8px; margin-bottom:16px; font-size:0.85rem;">
+                <div style="flex:1; background:var(--bg-input); padding:8px 12px; border-radius:8px; text-align:center;">
+                    <div style="color:var(--text-muted);">🎯 基本</div>
+                    <div style="font-weight:700;" id="eval-sum-base">0/0</div>
+                </div>
+                <div style="flex:1; background:var(--bg-input); padding:8px 12px; border-radius:8px; text-align:center;">
+                    <div style="color:var(--text-muted);">💬 互動</div>
+                    <div style="font-weight:700;" id="eval-sum-interact">0/0</div>
+                </div>
+                <div style="flex:1; background:var(--bg-input); padding:8px 12px; border-radius:8px; text-align:center;">
+                    <div style="color:var(--text-muted);">🤝 見面</div>
+                    <div style="font-weight:700;" id="eval-sum-meeting">0/0</div>
+                </div>
+            </div>
+
+            <!-- 門檻設定（僅 Admin） -->
+            <div id="threshold-section" style="display:none; margin-bottom:16px; padding:12px; border:1px dashed var(--border); border-radius:12px;">
+                <div style="font-weight:600; margin-bottom:10px; font-size:0.9rem;">⚙️ 門檻設定（僅限管理員）</div>
+                <div style="display:flex; gap:8px;">
+                    <div class="form-group" style="flex:1;">
+                        <label class="form-label">基本門檻</label>
+                        <input type="number" class="form-input" id="eval-b-threshold" min="0">
+                    </div>
+                    <div class="form-group" style="flex:1;">
+                        <label class="form-label">互動門檻</label>
+                        <input type="number" class="form-input" id="eval-i-threshold" min="0">
+                    </div>
+                    <div class="form-group" style="flex:1;">
+                        <label class="form-label">見面門檻</label>
+                        <input type="number" class="form-input" id="eval-m-threshold" min="0">
+                    </div>
+                </div>
+                <button class="btn btn-primary" style="margin-top:8px;" onclick="saveThresholds()">更新門檻</button>
+            </div>
+
+            <!-- 新增分數紀錄 -->
+            <div style="padding:12px; background:var(--bg-input); border-radius:12px; margin-bottom:16px;">
+                <div style="font-weight:600; margin-bottom:10px; font-size:0.9rem;">➕ 新增分數紀錄</div>
+                <div style="display:flex; gap:8px;">
+                    <div class="form-group" style="flex:1;">
+                        <label class="form-label">類別</label>
+                        <select class="form-input" id="log-category">
+                            <option value="base">🎯 基本分數</option>
+                            <option value="interaction">💬 互動分數</option>
+                            <option value="meeting">🤝 團長見面</option>
+                        </select>
+                    </div>
+                    <div class="form-group" style="flex:1;">
+                        <label class="form-label">分數</label>
+                        <input type="number" class="form-input" id="log-score" min="0" value="0">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">日期</label>
+                    <input type="date" class="form-input" id="log-date">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">備註（選填）</label>
+                    <input type="text" class="form-input" id="log-note" placeholder="例如：出席活動">
+                </div>
+                <button class="btn btn-primary" onclick="addScoreLog()">送出紀錄</button>
+            </div>
+
+            <!-- 歷史紀錄 -->
+            <div>
+                <div style="font-weight:600; margin-bottom:10px; font-size:0.9rem;">📋 歷史紀錄</div>
+                <div id="log-history" style="max-height:200px; overflow-y:auto;">載入中...</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 模態框：檢視已讀狀態 -->
+    <div class="modal-overlay" id="modal-read-status">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3 class="modal-title" id="read-modal-title">公告已讀名單</h3>
+                <button class="modal-close" onclick="closeModal('modal-read-status')">×</button>
+            </div>
+            <div id="read-status-list" style="max-height: 400px; overflow-y: auto;">
+                載入中...
+            </div>
+        </div>
+    </div>
+
+    <!-- 圖片放大 Lightbox -->
+    <div class="lightbox-overlay" id="lightbox" onclick="closeLightbox()">
+        <img src="" class="lightbox-img" id="lightbox-img">
+    </div>
+
+    <!-- Supabase SDK -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="config.js"></script>
+    
+    <script>
+        // ============================================
+        // 1. 系統初始化與認證
+        // ============================================
+        const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        
+        let currentUser = null;
+        let userData = null;
+        let allMembersData = []; // for admin eval search
+
+        // 檢查登入狀態
+        async function checkAuth() {
+            const { data: { session } } = await sb.auth.getSession();
+            if (!session) {
+                window.location.replace('login.html');
+                return;
+            }
+            currentUser = session.user;
+            await fetchUserData();
+        }
+
+        // 取得使用者詳細資料(Role)
+        async function fetchUserData() {
+            try {
+                const { data, error } = await sb.from('users').select('*').eq('id', currentUser.id).single();
+                if (error) throw error;
+                userData = data;
+                
+                // 設定 Header
+                document.getElementById('header-name').textContent = userData.display_name;
+                const roleBadge = document.getElementById('header-role');
+                roleBadge.textContent = userData.role;
+                roleBadge.className = `role-badge role-${userData.role}`;
+
+                // 初始化畫面權限
+                setupPermissions();
+                
+                // 隱藏載入畫面
+                document.getElementById('loader').style.opacity = '0';
+                setTimeout(() => document.getElementById('loader').style.display = 'none', 500);
+
+                // 預設載入首頁資料
+                loadTabContent('announcements');
+            } catch (err) {
+                console.error('Error fetching user data:', err);
+                alert('載入使用者資料失敗，請重新登入');
+                handleLogout();
+            }
+        }
+
+        async function handleLogout() {
+            await sb.auth.signOut();
+            window.location.replace('login.html');
+        }
+
+        // ============================================
+        // 2. UI 互動與導覽
+        // ============================================
+        function switchTab(tabId, element) {
+            // 切換 Nav 樣式
+            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+            element.classList.add('active');
+
+            // 切換內容區塊
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.getElementById(`sec-${tabId}`).classList.add('active');
+
+            // 載入該頁面資料
+            loadTabContent(tabId);
+        }
+
+        function loadTabContent(tabId) {
+            if (tabId === 'announcements') fetchAnnouncements();
+            if (tabId === 'evaluations') fetchEvaluations();
+            // game, upload, leaderboard 目前不需 API 呼叫
+        }
+
+        function setupPermissions() {
+            const isAdminOrStaff = ['admin', 'staff'].includes(userData.role);
+            
+            // 公告區：發布按鈕
+            if (isAdminOrStaff) {
+                document.getElementById('fab-add-announcement').classList.add('visible');
+            }
+
+            // 考核區：切換視角
+            if (isAdminOrStaff) {
+                document.getElementById('eval-admin-view').style.display = 'block';
+                document.getElementById('eval-member-view').style.display = 'none';
+            } else {
+                document.getElementById('eval-admin-view').style.display = 'none';
+                document.getElementById('eval-member-view').style.display = 'block';
+            }
+        }
+
+        // Modal 邏輯
+        function openModal(id) { document.getElementById(id).classList.add('active'); }
+        function closeModal(id) { document.getElementById(id).classList.remove('active'); }
+
+        // ============================================
+        // 3. 公告功能 (Announcements)
+        // ============================================
+        async function fetchAnnouncements() {
+            const listEl = document.getElementById('announcement-list');
+            try {
+                const { data, error } = await sb
+                    .from('announcements')
+                    .select(`*, users!announcements_author_id_fkey(display_name)`)
+                    .order('created_at', { ascending: false });
+                
+                if (error) throw error;
+
+                if (data.length === 0) {
+                    listEl.innerHTML = '<div style="text-align:center; padding:40px; color:var(--text-muted);">目前沒有公告</div>';
+                    return;
+                }
+
+                // 查詢自己的已讀狀態
+                const { data: reads } = await sb.from('announcement_reads').select('announcement_id').eq('user_id', currentUser.id);
+                const readIds = new Set(reads?.map(r => r.announcement_id) || []);
+
+                const isAdminOrStaff = ['admin', 'staff'].includes(userData.role);
+                
+                listEl.innerHTML = data.map(ann => `
+                    <div class="card announcement-card">
+                        <div class="announcement-header">
+                            <div class="announcement-title">${escapeHTML(ann.title)}</div>
+                            <div class="announcement-meta">
+                                <div>${ann.users?.display_name || '系統'}</div>
+                                <div>${new Date(ann.created_at).toLocaleDateString()}</div>
+                            </div>
+                        </div>
+                        <div class="announcement-content">${escapeHTML(ann.content)}</div>
+                        ${ann.image_url ? `<img src="${ann.image_url}" class="announcement-img" style="display:block;" loading="lazy" onclick="openLightbox(this.src)">` : ''}
+                        
+                        <div class="announcement-actions" style="display:flex;">
+                            <button class="action-btn" id="btn-read-${ann.id}" onclick="markAsRead('${ann.id}')" ${readIds.has(ann.id) ? 'disabled style="opacity:0.5;cursor:default;"' : ''}>${readIds.has(ann.id) ? '✅ 已讀' : '✔️ 標記已讀'}</button>
+                            ${isAdminOrStaff ? `<button class="action-btn" onclick="viewReadStatus('${ann.id}', '${escapeHTML(ann.title).replace(/'/g, "\\'")}')">檢視名單</button>` : ''}
+                            ${isAdminOrStaff ? `<button class="action-btn delete" onclick="deleteAnnouncement('${ann.id}')">刪除</button>` : ''}
+                        </div>
+                    </div>
+                `).join('');
+
+            } catch (err) {
+                console.error(err);
+                listEl.innerHTML = `<div style="text-align:center; color:var(--error); padding:20px;">載入公告失敗: ${err.message || JSON.stringify(err)}</div>`;
+            }
+        }
+
+        function openAnnouncementModal() {
+            document.getElementById('ann-id').value = '';
+            document.getElementById('ann-title').value = '';
+            document.getElementById('ann-content').value = '';
+            document.getElementById('ann-image').value = '';
+            openModal('modal-announcement');
+        }
+
+        async function saveAnnouncement() {
+            const title = document.getElementById('ann-title').value.trim();
+            const content = document.getElementById('ann-content').value.trim();
+            const imageFile = document.getElementById('ann-image').files[0];
+            
+            if(!title || !content) {
+                alert('請填寫標題與內容');
+                return;
+            }
+
+            let imageUrl = null;
+            
+            // 若有上傳圖片
+            if (imageFile) {
+                const fileExt = imageFile.name.split('.').pop();
+                const fileName = `${Math.random()}.${fileExt}`;
+                const { data: uploadData, error: uploadErr } = await sb.storage
+                    .from('images')
+                    .upload(`announcements/${fileName}`, imageFile);
+                
+                if (uploadErr) {
+                    alert('圖片上傳失敗: ' + uploadErr.message);
+                    return;
+                }
+                const { data: { publicUrl } } = sb.storage.from('images').getPublicUrl(`announcements/${fileName}`);
+                imageUrl = publicUrl;
+            }
+
+            // 寫入資料庫
+            const { error } = await sb.from('announcements').insert({
+                title, content, 
+                image_url: imageUrl,
+                author_id: currentUser.id
+            });
+
+            if (error) {
+                alert('發布失敗: ' + error.message);
+            } else {
+                closeModal('modal-announcement');
+                fetchAnnouncements();
+            }
+        }
+
+        async function deleteAnnouncement(id) {
+            if(!confirm('確定要刪除這則公告嗎？')) return;
+            const { error } = await sb.from('announcements').delete().eq('id', id);
+            if (error) alert('刪除失敗');
+            else fetchAnnouncements();
+        }
+
+        async function markAsRead(id) {
+            const { error } = await sb.from('announcement_reads').insert({ announcement_id: id, user_id: currentUser.id });
+            if (error && error.code !== '23505') { // Ignore unique violation if clicked twice quickly
+                alert('操作失敗: ' + error.message);
+                return;
+            }
+            const btn = document.getElementById(`btn-read-${id}`);
+            if (btn) {
+                btn.disabled = true;
+                btn.style.opacity = '0.5';
+                btn.style.cursor = 'default';
+                btn.innerHTML = '✅ 已讀';
+            }
+        }
+
+        async function viewReadStatus(annId, title) {
+            document.getElementById('read-modal-title').textContent = title + ' - 已讀名單';
+            openModal('modal-read-status');
+            const listEl = document.getElementById('read-status-list');
+            listEl.innerHTML = '<div style="text-align:center;padding:20px;color:var(--text-muted);">載入中...</div>';
+            
+            try {
+                // Ensure allMembersData is loaded (we need member list to compare)
+                if (!allMembersData || allMembersData.length === 0) {
+                    const { data } = await sb.from('users').select('*').neq('role', 'admin').order('email', { ascending: true });
+                    allMembersData = data || [];
+                }
+
+                const { data: reads, error } = await sb.from('announcement_reads').select('user_id').eq('announcement_id', annId);
+                if (error) throw error;
+
+                const readUserIds = new Set(reads.map(r => r.user_id));
+                const readMembers = [];
+                const unreadMembers = [];
+                
+                allMembersData.forEach(m => {
+                    if (readUserIds.has(m.id)) readMembers.push(m);
+                    else unreadMembers.push(m);
+                });
+                
+                const renderList = (arr, label) => {
+                    if (arr.length === 0) return `<div style="margin-bottom:16px;"><b>${label} (0)</b><br><span style="color:var(--text-muted);font-size:0.85rem;">無</span></div>`;
+                    return `<div style="margin-bottom:16px;"><b>${label} (${arr.length})</b><div style="margin-top:8px;">` + 
+                           arr.map(m => `<span style="display:inline-block; margin:0 8px 8px 0; font-size:0.85rem; background:var(--bg-card); border:1px solid var(--border); padding:4px 8px; border-radius:12px;">${m.email.split('@')[0]} ${escapeHTML(m.display_name)}</span>`).join('') +
+                           `</div></div>`;
+                };
+                
+                listEl.innerHTML = renderList(readMembers, '✅ 已讀') + renderList(unreadMembers, '❌ 未讀');
+            } catch(err) {
+                listEl.innerHTML = '<div style="color:var(--error);">載入失敗: ' + err.message + '</div>';
+            }
+        }
+
+        function openLightbox(src) {
+            document.getElementById('lightbox-img').src = src;
+            document.getElementById('lightbox').classList.add('active');
+        }
+        
+        function closeLightbox() {
+            document.getElementById('lightbox').classList.remove('active');
+        }
+
+        // ============================================
+        // 4. 考核功能 (Evaluations)
+        // ============================================
+        async function fetchEvaluations() {
+            // 所有人都會抓自己的資料
+            await fetchOwnEvaluation();
+            
+            // 若為 admin/staff，顯示切換按鈕並額外抓取列表
+            if (['admin', 'staff'].includes(userData.role)) {
+                document.getElementById('eval-toggle-container').style.display = 'flex';
+                await fetchAllEvaluations();
+                // 預設切換到管理模式
+                switchEvalMode('edit');
+            } else {
+                document.getElementById('eval-toggle-container').style.display = 'none';
+                switchEvalMode('view');
+            }
+        }
+
+        function switchEvalMode(mode) {
+            const isView = mode === 'view';
+            document.getElementById('toggle-view').classList.toggle('active', isView);
+            document.getElementById('toggle-edit').classList.toggle('active', !isView);
+            
+            document.getElementById('eval-member-view').style.display = isView ? 'block' : 'none';
+            document.getElementById('eval-admin-view').style.display = isView ? 'none' : 'block';
+        }
+
+        // Member 視角
+        async function fetchOwnEvaluation() {
+            try {
+                const { data, error } = await sb.from('evaluations').select('*').eq('user_id', currentUser.id).single();
+                if (error && error.code !== 'PGRST116') throw error; // PGRST116 is not found
+                
+                const ev = data || { 
+                    base_score: 0, base_threshold: 0, 
+                    interaction_score: 0, interaction_threshold: 0, 
+                    meeting_score: 0, meeting_threshold: 0 
+                };
+
+                updateProgressBar('base', ev.base_score, ev.base_threshold);
+                updateProgressBar('interact', ev.interaction_score, ev.interaction_threshold);
+                updateProgressBar('meeting', ev.meeting_score, ev.meeting_threshold);
+
+                // 總結判定
+                const bPass = ev.base_threshold > 0 && ev.base_score >= ev.base_threshold;
+                const iPass = ev.interaction_threshold > 0 && ev.interaction_score >= ev.interaction_threshold;
+                const mPass = ev.meeting_threshold > 0 && ev.meeting_score >= ev.meeting_threshold;
+                const hasThresholds = ev.base_threshold > 0 || ev.interaction_threshold > 0 || ev.meeting_threshold > 0;
+
+                const titleEl = document.getElementById('eval-final-title');
+                const textEl = document.getElementById('eval-final-text');
+
+                if (!hasThresholds) {
+                    titleEl.textContent = '尚未設定門檻';
+                    titleEl.style.color = 'var(--text-muted)';
+                    textEl.textContent = '請等待管理員為您設定考核標準';
+                } else if (bPass && iPass && mPass) {
+                    titleEl.textContent = '🎉 考核通過！';
+                    titleEl.style.color = 'var(--success)';
+                    textEl.textContent = '恭喜您完成了所有考核目標';
+                } else {
+                    titleEl.textContent = '考核進行中';
+                    titleEl.style.color = 'var(--accent)';
+                    textEl.textContent = '繼續加油，朝著目標邁進吧！';
+                }
+
+            } catch (err) {
+                console.error('Error fetching evaluation:', err);
+            }
+
+            // 載入自己的歷史紀錄
+            try {
+                const { data: logs } = await sb.from('score_logs')
+                    .select('*, operator:users!score_logs_created_by_fkey(display_name)')
+                    .eq('user_id', currentUser.id)
+                    .order('log_date', { ascending: false });
+                const el = document.getElementById('member-log-history');
+                if (!logs || logs.length === 0) {
+                    el.innerHTML = '<div style="text-align:center;color:var(--text-muted);padding:12px;">尚無紀錄</div>';
+                } else {
+                    const catLabel = { base: '🎯 基本', interaction: '💬 互動', meeting: '🤝 見面' };
+                    el.innerHTML = logs.map(log => {
+                        const opName = log.operator?.display_name || '系統';
+                        return `
+                        <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 10px;border-bottom:1px solid var(--border);font-size:0.85rem;">
+                            <div>
+                                <span>${catLabel[log.category] || log.category}</span>
+                                <span style="font-weight:700;color:var(--primary);margin-left:6px;">+${log.score}</span>
+                                ${log.note ? `<span style="color:var(--text-muted);margin-left:6px;">(${escapeHTML(log.note)})</span>` : ''}
+                            </div>
+                            <div style="color:var(--text-muted);white-space:nowrap;text-align:right;">
+                                <div>${log.log_date}</div>
+                                <div style="font-size:0.75rem;">by ${escapeHTML(opName)}</div>
+                            </div>
+                        </div>`;
+                    }).join('');
+                }
+            } catch(e) { console.error(e); }
+        }
+
+        function updateProgressBar(id, score, threshold) {
+            const bar = document.getElementById(`bar-${id}`);
+            const text = document.getElementById(`text-${id}`);
+            const status = document.getElementById(`status-${id}`);
+            
+            text.textContent = `${score} / ${threshold}`;
+            
+            if (threshold === 0) {
+                bar.style.width = '0%';
+                status.textContent = '無門檻';
+                status.className = 'progress-status status-none';
+                return;
+            }
+
+            const percent = Math.min(100, Math.round((score / threshold) * 100));
+            bar.style.width = `${percent}%`;
+
+            if (score >= threshold) {
+                status.textContent = '達標';
+                status.className = 'progress-status status-pass';
+                bar.classList.add('success');
+            } else {
+                status.textContent = '未達標';
+                status.className = 'progress-status status-fail';
+                bar.classList.remove('success');
+            }
+        }
+
+        // Admin/Staff 視角
+        async function fetchAllEvaluations() {
+            try {
+                // 聯表查詢 user + evaluation
+                const { data, error } = await sb
+                    .from('users')
+                    .select(`
+                        id, email, display_name, role,
+                        evaluations ( base_score, base_threshold, interaction_score, interaction_threshold, meeting_score, meeting_threshold )
+                    `)
+                    .neq('role', 'admin') // 不顯示 admin
+                    .order('email', { ascending: true }); // 按 SK01~SK26 排序
+
+                if (error) throw error;
+                allMembersData = data;
+                renderMemberList(data);
+            } catch(err) {
+                console.error(err);
+            }
+        }
+
+        function renderMemberList(data) {
+            const listEl = document.getElementById('member-list');
+            if (data.length === 0) {
+                listEl.innerHTML = '<div style="text-align:center; color:var(--text-muted); padding:20px;">無成員資料</div>';
+                return;
+            }
+
+            listEl.innerHTML = data.map(user => {
+                const rawEv = user.evaluations;
+                const ev = rawEv
+                    ? (Array.isArray(rawEv) ? (rawEv[0] || null) : rawEv)
+                    : null;
+                const safeEv = ev || { base_score:0, base_threshold:0, interaction_score:0, interaction_threshold:0, meeting_score:0, meeting_threshold:0 };
+                
+                const bPass = safeEv.base_threshold > 0 && safeEv.base_score >= safeEv.base_threshold;
+                const iPass = safeEv.interaction_threshold > 0 && safeEv.interaction_score >= safeEv.interaction_threshold;
+                const mPass = safeEv.meeting_threshold > 0 && safeEv.meeting_score >= safeEv.meeting_threshold;
+
+                const bClass = safeEv.base_threshold > 0 ? (bPass ? 'pass' : 'fail') : '';
+                const iClass = safeEv.interaction_threshold > 0 ? (iPass ? 'pass' : 'fail') : '';
+                const mClass = safeEv.meeting_threshold > 0 ? (mPass ? 'pass' : 'fail') : '';
+
+                // 把 user 和 evaluation 資料轉成 JSON 存在按鈕的屬性裡，方便點擊時使用
+                const encodedData = encodeURIComponent(JSON.stringify({...safeEv, id: user.id, name: user.display_name}));
+
+                return `
+                    <div class="member-list-item" onclick="openEvalModal('${encodedData}')">
+                        <div class="member-info">
+                            <span class="member-name">
+                                ${user.role==='staff' ? '🛡️ ' : ''}${escapeHTML(user.display_name)}
+                            </span>
+                            <span class="member-id">${user.email.split('@')[0]}</span>
+                        </div>
+                        <div class="member-status">
+                            <span class="dot ${bClass}" title="基本"></span>
+                            <span class="dot ${iClass}" title="互動"></span>
+                            <span class="dot ${mClass}" title="見面"></span>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function filterMembers() {
+            const query = document.getElementById('eval-search').value.toLowerCase();
+            const filtered = allMembersData.filter(u => 
+                u.display_name.toLowerCase().includes(query) || 
+                u.email.toLowerCase().includes(query)
+            );
+            renderMemberList(filtered);
+        }
+
+        function openEvalModal(encodedData) {
+            const data = JSON.parse(decodeURIComponent(encodedData));
+            document.getElementById('eval-user-id').value = data.id;
+            document.getElementById('eval-modal-name').textContent = data.name;
+
+            // 顯示總分摘要
+            document.getElementById('eval-sum-base').textContent = `${data.base_score || 0}/${data.base_threshold || 0}`;
+            document.getElementById('eval-sum-interact').textContent = `${data.interaction_score || 0}/${data.interaction_threshold || 0}`;
+            document.getElementById('eval-sum-meeting').textContent = `${data.meeting_score || 0}/${data.meeting_threshold || 0}`;
+
+            // 門檻區塊：僅 admin 可見
+            const thresholdSection = document.getElementById('threshold-section');
+            if (userData.role === 'admin') {
+                thresholdSection.style.display = 'block';
+                document.getElementById('eval-b-threshold').value = data.base_threshold || 0;
+                document.getElementById('eval-i-threshold').value = data.interaction_threshold || 0;
+                document.getElementById('eval-m-threshold').value = data.meeting_threshold || 0;
+            } else {
+                thresholdSection.style.display = 'none';
+            }
+
+            // 預設日期為今天
+            document.getElementById('log-date').value = new Date().toISOString().split('T')[0];
+            document.getElementById('log-score').value = 0;
+            document.getElementById('log-note').value = '';
+            document.getElementById('log-category').value = 'base';
+
+            // 載入歷史紀錄
+            loadScoreLogs(data.id);
+            openModal('modal-eval');
+        }
+
+        async function saveThresholds() {
+            const userId = document.getElementById('eval-user-id').value;
+            try {
+                const { error } = await sb.from('evaluations').upsert({
+                    user_id: userId,
+                    base_threshold: parseInt(document.getElementById('eval-b-threshold').value) || 0,
+                    interaction_threshold: parseInt(document.getElementById('eval-i-threshold').value) || 0,
+                    meeting_threshold: parseInt(document.getElementById('eval-m-threshold').value) || 0,
+                    updated_at: new Date().toISOString()
+                });
+                if (error) throw error;
+                alert('門檻已更新！');
+                fetchAllEvaluations();
+            } catch (err) {
+                alert('更新失敗: ' + err.message);
+            }
+        }
+
+        async function addScoreLog() {
+            const userId = document.getElementById('eval-user-id').value;
+            const category = document.getElementById('log-category').value;
+            const score = parseInt(document.getElementById('log-score').value) || 0;
+            const logDate = document.getElementById('log-date').value;
+            const note = document.getElementById('log-note').value.trim();
+
+            if (!logDate) { alert('請選擇日期'); return; }
+            if (score <= 0) { alert('分數必須大於 0'); return; }
+
+            try {
+                // 新增紀錄
+                const { error: logErr } = await sb.from('score_logs').insert({
+                    user_id: userId, category, score, log_date: logDate,
+                    note: note, created_by: currentUser.id
+                });
+                if (logErr) {
+                    if (logErr.message.includes('duplicate') || logErr.message.includes('unique') || logErr.code === '23505') {
+                        alert('❌ 錯誤：該成員在此日期已有相同類別的紀錄，不可重複！');
+                    } else {
+                        alert('新增失敗: ' + logErr.message);
+                    }
+                    return;
+                }
+
+                // 累加到 evaluations 總分
+                const scoreField = category === 'base' ? 'base_score' : category === 'interaction' ? 'interaction_score' : 'meeting_score';
+                const { data: evalData } = await sb.from('evaluations').select(scoreField).eq('user_id', userId).single();
+                const newTotal = (evalData?.[scoreField] || 0) + score;
+                await sb.from('evaluations').update({ [scoreField]: newTotal, updated_at: new Date().toISOString() }).eq('user_id', userId);
+
+                // 刷新
+                loadScoreLogs(userId);
+                fetchAllEvaluations();
+                // 更新摘要
+                const { data: freshEval } = await sb.from('evaluations').select('*').eq('user_id', userId).single();
+                if (freshEval) {
+                    document.getElementById('eval-sum-base').textContent = `${freshEval.base_score}/${freshEval.base_threshold}`;
+                    document.getElementById('eval-sum-interact').textContent = `${freshEval.interaction_score}/${freshEval.interaction_threshold}`;
+                    document.getElementById('eval-sum-meeting').textContent = `${freshEval.meeting_score}/${freshEval.meeting_threshold}`;
+                }
+                document.getElementById('log-score').value = 0;
+                document.getElementById('log-note').value = '';
+                alert('✅ 紀錄已新增！');
+            } catch (err) {
+                alert('操作失敗: ' + err.message);
+            }
+        }
+
+        const categoryLabel = { base: '🎯 基本', interaction: '💬 互動', meeting: '🤝 見面' };
+
+        async function loadScoreLogs(userId) {
+            const el = document.getElementById('log-history');
+            try {
+                const { data, error } = await sb.from('score_logs')
+                    .select('*, operator:users!score_logs_created_by_fkey(display_name)')
+                    .eq('user_id', userId)
+                    .order('log_date', { ascending: false });
+                if (error) throw error;
+                if (!data || data.length === 0) {
+                    el.innerHTML = '<div style="text-align:center;color:var(--text-muted);padding:12px;">尚無紀錄</div>';
+                    return;
+                }
+                el.innerHTML = data.map(log => {
+                    const opName = log.operator?.display_name || '系統';
+                    return `
+                    <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 10px;border-bottom:1px solid var(--border);font-size:0.85rem;">
+                        <div>
+                            <span>${categoryLabel[log.category] || log.category}</span>
+                            <span style="font-weight:700;color:var(--primary);margin-left:6px;">+${log.score}</span>
+                            ${log.note ? `<span style="color:var(--text-muted);margin-left:6px;">(${escapeHTML(log.note)})</span>` : ''}
+                        </div>
+                        <div style="color:var(--text-muted);white-space:nowrap;text-align:right;">
+                            <div>${log.log_date}</div>
+                            <div style="font-size:0.75rem;">by ${escapeHTML(opName)}</div>
+                        </div>
+                    </div>`;
+                }).join('');
+            } catch (err) {
+                el.innerHTML = '<div style="color:var(--error);">載入失敗</div>';
+            }
+        }
+
+        // ============================================
+        // 工具函數
+        // ============================================
+        function escapeHTML(str) {
+            if (!str) return '';
+            return str.replace(/[&<>'"]/g, 
+                tag => ({
+                    '&': '&amp;',
+                    '<': '&lt;',
+                    '>': '&gt;',
+                    "'": '&#39;',
+                    '"': '&quot;'
+                }[tag])
+            );
+        }
+
+        // 啟動
+        window.onload = checkAuth;
+
+    </script>
+</body>
+</html>

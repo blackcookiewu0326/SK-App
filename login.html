@@ -1,0 +1,750 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>SK App — 登入</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-light: #818cf8;
+            --primary-dark: #4f46e5;
+            --accent: #f59e0b;
+            --bg-dark: #0f172a;
+            --bg-card: #1e293b;
+            --bg-input: #334155;
+            --text-primary: #f1f5f9;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+            --border: #475569;
+            --success: #22c55e;
+            --error: #ef4444;
+            --glass: rgba(30, 41, 59, 0.8);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* 動態背景 */
+        .bg-gradient {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            overflow: hidden;
+        }
+
+        .bg-gradient::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(ellipse at 20% 50%, rgba(99, 102, 241, 0.15) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 20%, rgba(245, 158, 11, 0.1) 0%, transparent 50%),
+                radial-gradient(ellipse at 50% 80%, rgba(34, 197, 94, 0.08) 0%, transparent 50%);
+            animation: bgShift 15s ease-in-out infinite;
+        }
+
+        @keyframes bgShift {
+
+            0%,
+            100% {
+                transform: translate(0, 0) rotate(0deg);
+            }
+
+            33% {
+                transform: translate(2%, -2%) rotate(1deg);
+            }
+
+            66% {
+                transform: translate(-1%, 1%) rotate(-1deg);
+            }
+        }
+
+        /* 浮動粒子 */
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: var(--primary-light);
+            border-radius: 50%;
+            opacity: 0;
+            animation: floatParticle 8s infinite;
+        }
+
+        @keyframes floatParticle {
+            0% {
+                opacity: 0;
+                transform: translateY(100vh) scale(0);
+            }
+
+            10% {
+                opacity: 0.6;
+            }
+
+            90% {
+                opacity: 0.2;
+            }
+
+            100% {
+                opacity: 0;
+                transform: translateY(-10vh) scale(1);
+            }
+        }
+
+        /* 登入卡片 */
+        .login-container {
+            position: relative;
+            z-index: 10;
+            width: 100%;
+            max-width: 420px;
+            padding: 16px;
+        }
+
+        .login-card {
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(99, 102, 241, 0.2);
+            border-radius: 24px;
+            padding: 40px 32px;
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.5),
+                0 0 80px rgba(99, 102, 241, 0.08);
+            animation: cardEntry 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            opacity: 0;
+            transform: translateY(30px);
+        }
+
+        @keyframes cardEntry {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Logo 區域 */
+        .logo-area {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+
+        .logo-icon {
+            width: 64px;
+            height: 64px;
+            margin: 0 auto 16px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            border-radius: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            box-shadow: 0 8px 24px rgba(99, 102, 241, 0.4);
+            animation: logoPulse 3s ease-in-out infinite;
+        }
+
+        @keyframes logoPulse {
+
+            0%,
+            100% {
+                box-shadow: 0 8px 24px rgba(99, 102, 241, 0.4);
+            }
+
+            50% {
+                box-shadow: 0 8px 40px rgba(99, 102, 241, 0.6);
+            }
+        }
+
+        .logo-title {
+            font-size: 1.6rem;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            background: linear-gradient(135deg, var(--text-primary), var(--primary-light));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .logo-subtitle {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+
+        /* 標籤切換 */
+        .tab-container {
+            display: flex;
+            background: var(--bg-dark);
+            border-radius: 14px;
+            padding: 4px;
+            margin-bottom: 28px;
+            border: 1px solid rgba(71, 85, 105, 0.5);
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 10px;
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            font-family: inherit;
+            font-size: 0.9rem;
+            font-weight: 600;
+            border-radius: 11px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .tab-btn.active {
+            background: var(--primary);
+            color: white;
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
+        }
+
+        .tab-btn:not(.active):hover {
+            color: var(--text-secondary);
+        }
+
+        /* 表單 */
+        .form-section {
+            display: none;
+            animation: fadeSlide 0.4s ease forwards;
+        }
+
+        .form-section.active {
+            display: block;
+        }
+
+        @keyframes fadeSlide {
+            from {
+                opacity: 0;
+                transform: translateX(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .input-group {
+            margin-bottom: 18px;
+        }
+
+        .input-label {
+            display: block;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-bottom: 6px;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        .input-icon {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 1.1rem;
+            opacity: 0.5;
+            transition: opacity 0.3s;
+            pointer-events: none;
+        }
+
+        .input-field {
+            width: 100%;
+            padding: 14px 14px 14px 44px;
+            background: var(--bg-input);
+            border: 2px solid transparent;
+            border-radius: 12px;
+            color: var(--text-primary);
+            font-family: inherit;
+            font-size: 0.95rem;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .input-field::placeholder {
+            color: var(--text-muted);
+        }
+
+        .input-field:focus {
+            border-color: var(--primary);
+            background: rgba(51, 65, 85, 0.8);
+            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.15);
+        }
+
+        .input-field:focus+.input-icon,
+        .input-field:focus~.input-icon {
+            opacity: 1;
+        }
+
+        /* 密碼顯示切換 */
+        .password-toggle {
+            position: absolute;
+            right: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 1.1rem;
+            padding: 4px;
+            transition: color 0.3s;
+        }
+
+        .password-toggle:hover {
+            color: var(--text-primary);
+        }
+
+        /* 提交按鈕 */
+        .submit-btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            border: none;
+            border-radius: 12px;
+            color: white;
+            font-family: inherit;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            margin-top: 8px;
+            letter-spacing: 0.5px;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(99, 102, 241, 0.5);
+        }
+
+        .submit-btn:active {
+            transform: translateY(0);
+        }
+
+        .submit-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .submit-btn .btn-text {
+            transition: opacity 0.3s;
+        }
+
+        .submit-btn.loading .btn-text {
+            opacity: 0;
+        }
+
+        .submit-btn .spinner {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 22px;
+            height: 22px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .submit-btn.loading .spinner {
+            opacity: 1;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: translate(-50%, -50%) rotate(360deg);
+            }
+        }
+
+        /* 提示訊息 */
+        .message {
+            margin-top: 16px;
+            padding: 12px 16px;
+            border-radius: 10px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            display: none;
+            align-items: center;
+            gap: 8px;
+            animation: msgPop 0.3s ease;
+        }
+
+        .message.show {
+            display: flex;
+        }
+
+        .message.success {
+            background: rgba(34, 197, 94, 0.15);
+            border: 1px solid rgba(34, 197, 94, 0.3);
+            color: var(--success);
+        }
+
+        .message.error {
+            background: rgba(239, 68, 68, 0.15);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            color: var(--error);
+        }
+
+        @keyframes msgPop {
+            from {
+                opacity: 0;
+                transform: translateY(-5px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* 分隔線 */
+        .divider {
+            display: flex;
+            align-items: center;
+            margin: 24px 0;
+            gap: 12px;
+        }
+
+        .divider::before,
+        .divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: var(--border);
+        }
+
+        .divider span {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 600;
+        }
+
+        /* 底部連結 */
+        .footer-text {
+            text-align: center;
+            margin-top: 24px;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        .footer-text a {
+            color: var(--primary-light);
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.3s;
+        }
+
+        .footer-text a:hover {
+            color: var(--accent);
+        }
+
+        /* 設定提示 */
+        .setup-notice {
+            margin-top: 20px;
+            padding: 14px;
+            background: rgba(245, 158, 11, 0.1);
+            border: 1px solid rgba(245, 158, 11, 0.25);
+            border-radius: 12px;
+            font-size: 0.78rem;
+            color: var(--accent);
+            text-align: center;
+            line-height: 1.5;
+            display: none;
+        }
+
+        .setup-notice.show {
+            display: block;
+        }
+
+        /* RWD */
+        @media (max-width: 480px) {
+            .login-card {
+                padding: 32px 24px;
+            }
+
+            .logo-title {
+                font-size: 1.4rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- 動態背景 -->
+    <div class="bg-gradient"></div>
+    <div class="particles" id="particles"></div>
+
+    <!-- 登入卡片 -->
+    <div class="login-container">
+        <div class="login-card">
+            <!-- Logo -->
+            <div class="logo-area">
+                <div class="logo-icon">📚</div>
+                <div class="logo-title">SK App</div>
+                <div class="logo-subtitle">你今天操迪拉熊了嗎？</div>
+            </div>
+
+            <!-- 登入表單 -->
+            <div id="form-login">
+                <div class="input-group">
+                    <label class="input-label">帳號</label>
+                    <div class="input-wrapper">
+                        <input class="input-field" id="login-email" type="text" placeholder="例如：SK67"
+                            autocomplete="username">
+                        <span class="input-icon">👤</span>
+                    </div>
+                </div>
+                <div class="input-group">
+                    <label class="input-label">密碼</label>
+                    <div class="input-wrapper">
+                        <input class="input-field" id="login-password" type="password" placeholder="輸入您的密碼"
+                            autocomplete="current-password">
+                        <span class="input-icon">🔒</span>
+                        <button class="password-toggle" onclick="togglePassword('login-password', this)"
+                            type="button">👁</button>
+                    </div>
+                </div>
+                <button class="submit-btn" id="btn-login" onclick="handleLogin()">
+                    <span class="btn-text">登入</span>
+                    <div class="spinner"></div>
+                </button>
+            </div>
+
+
+            <!-- 提示訊息 -->
+            <div class="message" id="message"></div>
+
+            <!-- 設定提醒（開發時顯示） -->
+            <div class="setup-notice show" id="setup-notice">
+                ⚠️ 尚未設定 Supabase 連線。<br>
+                請在 <strong>login.html</strong> 中填入你的<br>
+                <strong>SUPABASE_URL</strong> 和 <strong>SUPABASE_ANON_KEY</strong>
+            </div>
+        </div>
+    </div>
+
+    <!-- Supabase SDK (CDN) -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="config.js"></script>
+
+    <script>
+        // ============================================
+        // 🔧 Supabase 設定 — 由 config.js 提供
+        // ============================================
+
+        // 初始化 Supabase Client
+        let sb = null;
+        const isConfigured = typeof SUPABASE_URL !== 'undefined' && SUPABASE_URL !== 'YOUR_SUPABASE_URL';
+
+        if (isConfigured) {
+            const { createClient } = supabase;
+            sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+            document.getElementById('setup-notice').classList.remove('show');
+
+            // 檢查是否已登入
+            sb.auth.getSession().then(({ data: { session } }) => {
+                if (session) {
+                    // 已登入，跳轉到主頁
+                    window.location.href = 'index.html';
+                }
+            });
+        }
+
+        // ============================================
+        // UI 功能
+        // ============================================
+
+        // 切換登入 / 註冊
+        function switchTab(tab) {
+            document.getElementById('tab-login').classList.toggle('active', tab === 'login');
+            document.getElementById('tab-register').classList.toggle('active', tab === 'register');
+            document.getElementById('form-login').classList.toggle('active', tab === 'login');
+            document.getElementById('form-register').classList.toggle('active', tab === 'register');
+            hideMessage();
+        }
+
+        // 密碼顯示 / 隱藏
+        function togglePassword(inputId, btn) {
+            const input = document.getElementById(inputId);
+            if (input.type === 'password') {
+                input.type = 'text';
+                btn.textContent = '🙈';
+            } else {
+                input.type = 'password';
+                btn.textContent = '👁';
+            }
+        }
+
+        // 顯示訊息
+        function showMessage(text, type) {
+            const msg = document.getElementById('message');
+            msg.className = 'message show ' + type;
+            msg.innerHTML = (type === 'success' ? '✅ ' : '❌ ') + text;
+        }
+
+        function hideMessage() {
+            document.getElementById('message').className = 'message';
+        }
+
+        // 按鈕 Loading 狀態
+        function setLoading(btnId, loading) {
+            const btn = document.getElementById(btnId);
+            btn.disabled = loading;
+            btn.classList.toggle('loading', loading);
+        }
+
+        // 自動將帳號轉成 email 格式（Supabase 需要）
+        function toEmail(account) {
+            if (account.includes('@')) return account;
+            return account + '@sk.app';
+        }
+
+        // ============================================
+        // 登入處理
+        // ============================================
+        async function handleLogin() {
+            if (!isConfigured) {
+                showMessage('請先設定 Supabase 連線資訊', 'error');
+                return;
+            }
+
+            const account = document.getElementById('login-email').value.trim();
+            const password = document.getElementById('login-password').value;
+
+            if (!account || !password) {
+                showMessage('請填入帳號和密碼', 'error');
+                return;
+            }
+
+            const email = toEmail(account);
+
+            setLoading('btn-login', true);
+            hideMessage();
+
+            try {
+                const { data, error } = await sb.auth.signInWithPassword({
+                    email: email,
+                    password: password
+                });
+
+                if (error) throw error;
+
+                showMessage('登入成功！正在跳轉...', 'success');
+
+                // 更新最後登入時間
+                await sb.from('users').upsert({
+                    id: data.user.id,
+                    email: data.user.email,
+                    last_login: new Date().toISOString()
+                });
+
+                setTimeout(() => {
+                    window.location.href = 'index.html';
+                }, 1000);
+            } catch (err) {
+                const zhMsg = translateError(err.message);
+                showMessage(zhMsg, 'error');
+            } finally {
+                setLoading('btn-login', false);
+            }
+        }
+
+
+        // ============================================
+        // 錯誤訊息翻譯
+        // ============================================
+        function translateError(msg) {
+            const map = {
+                'Invalid login credentials': '帳號或密碼錯誤',
+                'Email not confirmed': '請先驗證您的電子郵件',
+                'User already registered': '此電子郵件已被註冊',
+                'Password should be at least 6 characters': '密碼至少需要 6 個字元',
+                'Unable to validate email address: invalid format': '電子郵件格式不正確',
+                'Email rate limit exceeded': '寄信次數過多，請稍後再試',
+                'Signup is disabled': '目前暫停註冊功能',
+            };
+            for (const [en, zh] of Object.entries(map)) {
+                if (msg.includes(en)) return zh;
+            }
+            return msg;
+        }
+
+        // ============================================
+        // 鍵盤 Enter 鍵支援
+        // ============================================
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                handleLogin();
+            }
+        });
+
+        // ============================================
+        // 背景粒子效果
+        // ============================================
+        function createParticles() {
+            const container = document.getElementById('particles');
+            for (let i = 0; i < 20; i++) {
+                const p = document.createElement('div');
+                p.className = 'particle';
+                p.style.left = Math.random() * 100 + '%';
+                p.style.animationDelay = Math.random() * 8 + 's';
+                p.style.animationDuration = (6 + Math.random() * 6) + 's';
+                p.style.width = p.style.height = (2 + Math.random() * 4) + 'px';
+                p.style.background = ['#6366f1', '#818cf8', '#f59e0b', '#22c55e'][Math.floor(Math.random() * 4)];
+                container.appendChild(p);
+            }
+        }
+
+        createParticles();
+    </script>
+</body>
+
+</html>
