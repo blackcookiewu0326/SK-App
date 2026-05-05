@@ -487,6 +487,37 @@
             min-height: 100px;
         }
 
+        /* Check-in */
+        .checkin-container {
+            padding: 24px; background: var(--bg-card); border-radius: 24px;
+            border: 1px solid var(--border); box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+            text-align: center; margin-top: 20px;
+        }
+        .checkin-grid {
+            display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin: 24px 0;
+        }
+        .checkin-day {
+            aspect-ratio: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
+            background: var(--bg-input); border-radius: 16px; border: 1px solid var(--border);
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1); position: relative;
+        }
+        .checkin-day.checked {
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            color: white; border-color: transparent; transform: scale(1.05);
+            box-shadow: 0 8px 15px rgba(99, 102, 241, 0.3);
+        }
+        .checkin-day.today { border: 2px solid var(--primary); }
+        .checkin-day .day-num { font-size: 0.75rem; opacity: 0.7; margin-bottom: 2px; }
+        .checkin-day .day-status { font-size: 1.2rem; }
+        .checkin-day.checked::after {
+            content: '✓'; position: absolute; top: -5px; right: -5px;
+            background: var(--success); color: white; width: 20px; height: 20px;
+            border-radius: 50%; font-size: 12px; display: flex; align-items: center; justify-content: center;
+            border: 2px solid white;
+        }
+        .checkin-info { font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 20px; line-height: 1.5; }
+        .checkin-info b { color: var(--primary); }
+
         .btn {
             width: 100%;
             padding: 12px;
@@ -825,12 +856,21 @@
             <button class="fab" id="fab-add-announcement" onclick="openAnnouncementModal()">➕</button>
         </section>
 
-        <!-- 📤 上傳 -->
-        <section id="sec-upload" class="tab-content">
-            <div class="wip-container">
-                <div class="wip-icon">📤</div>
-                <h2>上傳區</h2>
-                <p style="margin-top: 8px;">考核圖片上傳功能目前建置中<br>敬請期待！</p>
+        <!-- 📅 簽到 -->
+        <section id="sec-checkin" class="tab-content">
+            <div class="checkin-container">
+                <h2 style="margin-bottom: 8px;">每日簽到</h2>
+                <div class="checkin-info" id="checkin-msg">
+                    連續簽到可獲得獎勵！<br>今日簽到成功：<b>遊戲初始轉數 +5</b>
+                </div>
+                
+                <div class="checkin-grid" id="checkin-grid">
+                    <!-- 7天簽到格子由 JS 生成 -->
+                </div>
+
+                <button class="btn btn-primary" id="btn-do-checkin" onclick="doCheckIn()" style="padding: 16px;">
+                    立即簽到
+                </button>
             </div>
         </section>
 
@@ -937,9 +977,9 @@
             <div class="nav-icon">📢</div>
             <div class="nav-label">公告</div>
         </div>
-        <div class="nav-item" onclick="switchTab('upload', this)">
-            <div class="nav-icon">📤</div>
-            <div class="nav-label">上傳</div>
+        <div class="nav-item" onclick="switchTab('checkin', this)">
+            <div class="nav-icon">📅</div>
+            <div class="nav-label">簽到</div>
         </div>
         <div class="nav-item" onclick="switchTab('evaluations', this)">
             <div class="nav-icon">📝</div>
@@ -1130,6 +1170,9 @@
 
                 // 預設載入首頁資料
                 loadTabContent('announcements');
+                
+                // 檢查今日簽到狀態
+                checkTodayCheckIn();
 
                 // 監聽來自遊戲 Iframe 的分數訊息
                 window.addEventListener('message', async (event) => {
@@ -1199,6 +1242,113 @@
             if (tabId === 'announcements') fetchAnnouncements();
             if (tabId === 'evaluations') fetchEvaluations();
             if (tabId === 'leaderboard') loadLeaderboard();
+            if (tabId === 'checkin') loadCheckInData();
+            
+            // 進入遊戲時檢查是否有簽到獎勵
+            if (tabId === 'game') updateGameBonus();
+        }
+
+        // ============================================
+        // 簽到功能 (Check-in)
+        // ============================================
+        let hasCheckedInToday = false;
+        let userCheckInHistory = [];
+
+        async function checkTodayCheckIn() {
+            const today = new Date().toISOString().split('T')[0];
+            try {
+                const { data, error } = await sb
+                    .from('check_ins')
+                    .select('*')
+                    .eq('user_id', currentUser.id)
+                    .eq('check_in_date', today);
+                
+                hasCheckedInToday = (data && data.length > 0);
+            } catch (e) { console.error(e); }
+        }
+
+        async function loadCheckInData() {
+            const grid = document.getElementById('checkin-grid');
+            grid.innerHTML = '<div style="grid-column: span 4; padding: 20px;">載入中...</div>';
+
+            try {
+                // 抓取最近 7 天的紀錄
+                const { data, error } = await sb
+                    .from('check_ins')
+                    .select('check_in_date')
+                    .eq('user_id', currentUser.id)
+                    .order('check_in_date', { ascending: false })
+                    .limit(7);
+                
+                if (error) throw error;
+                userCheckInHistory = data.map(d => d.check_in_date);
+                renderCheckInGrid();
+
+                const btn = document.getElementById('btn-do-checkin');
+                if (hasCheckedInToday) {
+                    btn.disabled = true;
+                    btn.textContent = '今日已簽到';
+                    btn.style.opacity = '0.5';
+                }
+            } catch (err) {
+                console.error(err);
+                grid.innerHTML = '<div style="grid-column: span 4; color: var(--error);">載入失敗</div>';
+            }
+        }
+
+        function renderCheckInGrid() {
+            const grid = document.getElementById('checkin-grid');
+            const today = new Date();
+            
+            let html = '';
+            // 顯示最近 7 天 (包含今天)
+            for (let i = 6; i >= 0; i--) {
+                const date = new Date();
+                date.setDate(today.getDate() - i);
+                const dateStr = date.toISOString().split('T')[0];
+                const isChecked = userCheckInHistory.includes(dateStr);
+                const isToday = i === 0;
+                
+                html += `
+                    <div class="checkin-day ${isChecked ? 'checked' : ''} ${isToday ? 'today' : ''}">
+                        <div class="day-num">${date.getMonth() + 1}/${date.getDate()}</div>
+                        <div class="day-status">${isChecked ? '🎁' : '⚪'}</div>
+                    </div>
+                `;
+            }
+            grid.innerHTML = html;
+        }
+
+        async function doCheckIn() {
+            if (hasCheckedInToday) return;
+
+            try {
+                const { error } = await sb.from('check_ins').insert({
+                    user_id: currentUser.id
+                });
+                
+                if (error) {
+                    if (error.code === '23505') alert('今日已簽到過囉！');
+                    else throw error;
+                } else {
+                    alert('簽到成功！今日遊戲初始轉數 +5');
+                    hasCheckedInToday = true;
+                    loadCheckInData();
+                }
+            } catch (err) {
+                alert('簽到失敗: ' + err.message);
+            }
+        }
+
+        function updateGameBonus() {
+            const frame = document.getElementById('game-frame');
+            const currentSrc = frame.src;
+            const targetSrc = 'slot.html' + (hasCheckedInToday ? '?bonus=5' : '');
+            
+            // 只有在參數不符時才重新載入
+            if (!currentSrc.includes(targetSrc)) {
+                frame.src = targetSrc;
+            }
         }
 
         function setupPermissions() {
