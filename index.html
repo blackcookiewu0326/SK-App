@@ -1,10 +1,12 @@
 <!DOCTYPE html>
 <html lang="zh-TW">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>SK App — 首頁</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
     <style>
         :root {
             --primary: #6366f1;
@@ -46,10 +48,14 @@
         /* 背景特效 */
         .bg-gradient {
             position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            z-index: -1; pointer-events: none;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            pointer-events: none;
             background: radial-gradient(circle at top right, rgba(99, 102, 241, 0.06), transparent 40%),
-                        radial-gradient(circle at bottom left, rgba(245, 158, 11, 0.03), transparent 40%);
+                radial-gradient(circle at bottom left, rgba(245, 158, 11, 0.03), transparent 40%);
         }
 
         /* 頂部 Header */
@@ -59,13 +65,15 @@
             backdrop-filter: blur(12px);
             -webkit-backdrop-filter: blur(12px);
             border-bottom: 1px solid var(--border);
-            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
             display: flex;
             justify-content: space-between;
             align-items: center;
             padding: 0 20px;
             position: fixed;
-            top: 0; left: 0; right: 0;
+            top: 0;
+            left: 0;
+            right: 0;
             z-index: 100;
         }
 
@@ -95,15 +103,37 @@
             font-weight: 600;
             text-transform: uppercase;
         }
-        .role-admin { background: rgba(239, 68, 68, 0.1); color: #dc2626; border: 1px solid rgba(239, 68, 68, 0.2); }
-        .role-staff { background: rgba(245, 158, 11, 0.1); color: #d97706; border: 1px solid rgba(245, 158, 11, 0.2); }
-        .role-member { background: rgba(99, 102, 241, 0.1); color: #4f46e5; border: 1px solid rgba(99, 102, 241, 0.2); }
+
+        .role-admin {
+            background: rgba(239, 68, 68, 0.1);
+            color: #dc2626;
+            border: 1px solid rgba(239, 68, 68, 0.2);
+        }
+
+        .role-staff {
+            background: rgba(245, 158, 11, 0.1);
+            color: #d97706;
+            border: 1px solid rgba(245, 158, 11, 0.2);
+        }
+
+        .role-member {
+            background: rgba(99, 102, 241, 0.1);
+            color: #4f46e5;
+            border: 1px solid rgba(99, 102, 241, 0.2);
+        }
 
         .logout-btn {
-            background: none; border: none; color: var(--text-muted); cursor: pointer;
-            font-size: 1.2rem; transition: color 0.2s;
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 1.2rem;
+            transition: color 0.2s;
         }
-        .logout-btn:hover { color: var(--error); }
+
+        .logout-btn:hover {
+            color: var(--error);
+        }
 
         /* 主要內容區 */
         main {
@@ -120,19 +150,29 @@
             animation: fadeIn 0.3s ease;
             min-height: 100%;
         }
+
         .tab-content.active {
             display: block;
         }
 
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(5px); }
-            to { opacity: 1; transform: translateY(0); }
+            from {
+                opacity: 0;
+                transform: translateY(5px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         /* 底部導覽列 */
         .bottom-nav {
             position: fixed;
-            bottom: 0; left: 0; right: 0;
+            bottom: 0;
+            left: 0;
+            right: 0;
             height: var(--nav-height);
             background: var(--glass);
             backdrop-filter: blur(20px);
@@ -143,7 +183,7 @@
             align-items: center;
             padding-bottom: env(safe-area-inset-bottom);
             z-index: 100;
-            box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
         }
 
         .nav-item {
@@ -182,13 +222,19 @@
         .nav-item::before {
             content: '';
             position: absolute;
-            top: -1px; left: 50%; transform: translateX(-50%);
-            width: 0; height: 3px;
+            top: -1px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 3px;
             background: var(--primary-light);
             border-radius: 0 0 4px 4px;
             transition: width 0.3s;
         }
-        .nav-item.active::before { width: 30px; }
+
+        .nav-item.active::before {
+            width: 30px;
+        }
 
         /* 全域卡片設計 */
         .card {
@@ -197,29 +243,43 @@
             padding: 16px;
             margin-bottom: 16px;
             border: 1px solid var(--border);
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
         }
 
         /* WIP 畫面 */
         .wip-container {
-            display: flex; flex-direction: column;
-            align-items: center; justify-content: center;
-            height: 100%; text-align: center; color: var(--text-muted);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            text-align: center;
+            color: var(--text-muted);
             padding-top: 20vh;
         }
-        .wip-icon { font-size: 4rem; margin-bottom: 16px; opacity: 0.5; }
-        
+
+        .wip-icon {
+            font-size: 4rem;
+            margin-bottom: 16px;
+            opacity: 0.5;
+        }
+
         /* 載入畫面 */
         .full-loader {
-            position: fixed; inset: 0;
+            position: fixed;
+            inset: 0;
             background: #ffffff;
-            display: flex; flex-direction: column;
-            align-items: center; justify-content: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
             z-index: 9999;
             transition: opacity 0.5s;
         }
+
         .spinner {
-            width: 40px; height: 40px;
+            width: 40px;
+            height: 40px;
             border: 4px solid rgba(99, 102, 241, 0.2);
             border-top-color: var(--primary);
             border-radius: 50%;
@@ -231,122 +291,356 @@
             position: fixed;
             bottom: calc(var(--nav-height) + 20px + env(safe-area-inset-bottom));
             right: 20px;
-            width: 56px; height: 56px;
+            width: 56px;
+            height: 56px;
             border-radius: 50%;
             background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-            color: white; border: none;
+            color: white;
+            border: none;
             font-size: 24px;
-            display: none; align-items: center; justify-content: center;
+            display: none;
+            align-items: center;
+            justify-content: center;
             box-shadow: 0 8px 25px rgba(99, 102, 241, 0.5);
-            cursor: pointer; z-index: 90;
+            cursor: pointer;
+            z-index: 90;
             transition: transform 0.2s;
         }
-        .fab:hover { transform: scale(1.05); }
-        .fab.visible { display: flex; }
+
+        .fab:hover {
+            transform: scale(1.05);
+        }
+
+        .fab.visible {
+            display: flex;
+        }
 
         /* 公告樣式 */
         .announcement-card {
             transition: transform 0.2s;
         }
-        .announcement-card:hover { transform: translateY(-2px); }
+
+        .announcement-card:hover {
+            transform: translateY(-2px);
+        }
+
         .announcement-header {
-            display: flex; justify-content: space-between; align-items: flex-start;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
             margin-bottom: 12px;
         }
-        .announcement-title { font-size: 1.1rem; font-weight: 600; color: var(--text-primary); }
-        .announcement-meta { font-size: 0.75rem; color: var(--text-muted); text-align: right; }
-        .announcement-content { font-size: 0.95rem; color: var(--text-secondary); line-height: 1.6; white-space: pre-wrap;}
-        .announcement-img {
-            width: 100%; max-width: 160px; aspect-ratio: 1 / 1; object-fit: contain; background: #000;
-            border-radius: 12px; margin: 12px auto 0 auto;
-            display: none; border: 1px solid var(--border); cursor: zoom-in;
+
+        .announcement-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-primary);
         }
+
+        .announcement-meta {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            text-align: right;
+        }
+
+        .announcement-content {
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+            line-height: 1.6;
+            white-space: pre-wrap;
+        }
+
+        .announcement-img {
+            width: 100%;
+            max-width: 160px;
+            aspect-ratio: 1 / 1;
+            object-fit: contain;
+            background: #000;
+            border-radius: 12px;
+            margin: 12px auto 0 auto;
+            display: none;
+            border: 1px solid var(--border);
+            cursor: zoom-in;
+        }
+
         .announcement-actions {
-            margin-top: 12px; display: flex; gap: 8px; justify-content: flex-end;
+            margin-top: 12px;
+            display: flex;
+            gap: 8px;
+            justify-content: flex-end;
             /* removed display:none to allow members to see the read button */
         }
+
         .action-btn {
-            background: transparent; border: 1px solid var(--border);
-            color: var(--text-secondary); padding: 4px 12px; border-radius: 6px;
-            font-size: 0.8rem; cursor: pointer; transition: all 0.2s;
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text-secondary);
+            padding: 4px 12px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.2s;
         }
-        .action-btn:hover { background: var(--bg-card-hover); color: var(--text-primary); }
-        .action-btn.delete:hover { border-color: var(--error); color: var(--error); }
+
+        .action-btn:hover {
+            background: var(--bg-card-hover);
+            color: var(--text-primary);
+        }
+
+        .action-btn.delete:hover {
+            border-color: var(--error);
+            color: var(--error);
+        }
 
         /* Modal 樣式 */
         .modal-overlay {
-            position: fixed; inset: 0; background: rgba(0,0,0,0.4);
-            backdrop-filter: blur(5px); display: none;
-            align-items: center; justify-content: center; z-index: 1000;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(5px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
             padding: 20px;
         }
-        .modal-overlay.active { display: flex; }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
         .modal-card {
-            background: var(--bg-card); border-radius: 20px; width: 100%; max-width: 500px;
-            max-height: 90vh; overflow-y: auto; padding: 24px;
-            border: 1px solid var(--border); box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+            background: var(--bg-card);
+            border-radius: 20px;
+            width: 100%;
+            max-width: 500px;
+            max-height: 90vh;
+            overflow-y: auto;
+            padding: 24px;
+            border: 1px solid var(--border);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
             animation: modalPop 0.3s cubic-bezier(0.16, 1, 0.3, 1);
         }
+
         @keyframes modalPop {
-            from { transform: scale(0.95); opacity: 0; }
-            to { transform: scale(1); opacity: 1; }
+            from {
+                transform: scale(0.95);
+                opacity: 0;
+            }
+
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
         }
+
         .modal-header {
-            display: flex; justify-content: space-between; align-items: center;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             margin-bottom: 20px;
         }
-        .modal-title { font-size: 1.25rem; font-weight: 700; }
-        .modal-close { background: none; border: none; color: var(--text-muted); font-size: 1.5rem; cursor: pointer; }
-        
-        .form-group { margin-bottom: 16px; }
-        .form-label { display: block; font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 6px; }
+
+        .modal-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-bottom: 6px;
+        }
+
         .form-input {
-            width: 100%; padding: 12px; background: var(--bg-input); border: 1px solid var(--border);
-            border-radius: 10px; color: var(--text-primary); font-family: inherit; font-size: 0.95rem;
-            outline: none; transition: border-color 0.2s;
+            width: 100%;
+            padding: 12px;
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            color: var(--text-primary);
+            font-family: inherit;
+            font-size: 0.95rem;
+            outline: none;
+            transition: border-color 0.2s;
         }
-        .form-input:focus { border-color: var(--primary); }
-        textarea.form-input { resize: vertical; min-height: 100px; }
-        
+
+        .form-input:focus {
+            border-color: var(--primary);
+        }
+
+        textarea.form-input {
+            resize: vertical;
+            min-height: 100px;
+        }
+
         .btn {
-            width: 100%; padding: 12px; border: none; border-radius: 10px; font-weight: 600;
-            cursor: pointer; font-size: 1rem; transition: transform 0.2s;
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: transform 0.2s;
         }
-        .btn-primary { background: linear-gradient(135deg, var(--primary), var(--primary-dark)); color: white; }
-        .btn-primary:active { transform: scale(0.98); }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+        }
+
+        .btn-primary:active {
+            transform: scale(0.98);
+        }
 
         /* 考核進度條 (Member) */
-        .progress-section { margin-bottom: 20px; }
-        .progress-header { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 0.9rem;}
-        .progress-title { font-weight: 600; display: flex; align-items: center; gap: 6px;}
-        .progress-status { font-size: 0.8rem; padding: 2px 8px; border-radius: 10px; font-weight: 600; }
-        .status-pass { background: rgba(34, 197, 94, 0.2); color: var(--success); }
-        .status-fail { background: rgba(239, 68, 68, 0.2); color: var(--error); }
-        .status-none { background: rgba(148, 163, 184, 0.2); color: var(--text-muted); }
-        
-        .progress-bar-bg { width: 100%; height: 12px; background: var(--bg-input); border-radius: 6px; overflow: hidden; position: relative;}
-        .progress-bar-fill { height: 100%; background: linear-gradient(90deg, var(--primary), var(--primary-light)); border-radius: 6px; transition: width 0.5s ease-out; width: 0%;}
-        .progress-bar-fill.success { background: linear-gradient(90deg, #16a34a, #4ade80); }
-        
-        .eval-summary { text-align: center; padding: 20px 0; border-top: 1px solid var(--border); margin-top: 20px; }
-        .eval-summary-title { font-size: 1.2rem; font-weight: 700; margin-bottom: 8px;}
-        .eval-summary-text { font-size: 0.9rem; color: var(--text-secondary); }
+        .progress-section {
+            margin-bottom: 20px;
+        }
+
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+        }
+
+        .progress-title {
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .progress-status {
+            font-size: 0.8rem;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-weight: 600;
+        }
+
+        .status-pass {
+            background: rgba(34, 197, 94, 0.2);
+            color: var(--success);
+        }
+
+        .status-fail {
+            background: rgba(239, 68, 68, 0.2);
+            color: var(--error);
+        }
+
+        .status-none {
+            background: rgba(148, 163, 184, 0.2);
+            color: var(--text-muted);
+        }
+
+        .progress-bar-bg {
+            width: 100%;
+            height: 12px;
+            background: var(--bg-input);
+            border-radius: 6px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--primary-light));
+            border-radius: 6px;
+            transition: width 0.5s ease-out;
+            width: 0%;
+        }
+
+        .progress-bar-fill.success {
+            background: linear-gradient(90deg, #16a34a, #4ade80);
+        }
+
+        .eval-summary {
+            text-align: center;
+            padding: 20px 0;
+            border-top: 1px solid var(--border);
+            margin-top: 20px;
+        }
+
+        .eval-summary-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .eval-summary-text {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
 
         /* 考核列表 (Admin) */
         .member-list-item {
-            display: flex; justify-content: space-between; align-items: center;
-            padding: 12px 16px; background: var(--bg-card); border-radius: 12px;
-            margin-bottom: 10px; border: 1px solid var(--border);
-            cursor: pointer; transition: background 0.2s;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 16px;
+            background: var(--bg-card);
+            border-radius: 12px;
+            margin-bottom: 10px;
+            border: 1px solid var(--border);
+            cursor: pointer;
+            transition: background 0.2s;
         }
-        .member-list-item:hover { background: var(--bg-card-hover); }
-        .member-info { display: flex; flex-direction: column; gap: 4px; }
-        .member-name { font-weight: 600; font-size: 1rem; }
-        .member-id { font-size: 0.75rem; color: var(--text-muted); }
-        .member-status { display: flex; gap: 6px; }
-        .dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; }
-        .dot.pass { background: var(--success); box-shadow: 0 0 5px var(--success); }
-        .dot.fail { background: var(--error); }
+
+        .member-list-item:hover {
+            background: var(--bg-card-hover);
+        }
+
+        .member-info {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .member-name {
+            font-weight: 600;
+            font-size: 1rem;
+        }
+
+        .member-id {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .member-status {
+            display: flex;
+            gap: 6px;
+        }
+
+        .dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+
+        .dot.pass {
+            background: var(--success);
+            box-shadow: 0 0 5px var(--success);
+        }
+
+        .dot.fail {
+            background: var(--error);
+        }
 
         /* 遊戲 iframe */
         #game-frame {
@@ -355,10 +649,11 @@
             border: none;
             display: block;
         }
-        #sec-game { 
-            padding: 0; 
-            overflow: hidden; 
-            height: 100%; 
+
+        #sec-game {
+            padding: 0;
+            overflow: hidden;
+            height: 100%;
         }
 
         /* 切換按鈕 (Toggle) */
@@ -369,6 +664,7 @@
             padding: 4px;
             margin-bottom: 20px;
         }
+
         .eval-toggle-btn {
             flex: 1;
             padding: 10px;
@@ -380,31 +676,124 @@
             cursor: pointer;
             transition: all 0.2s;
         }
+
         .eval-toggle-btn.active {
             background: var(--bg-card);
             color: var(--primary);
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-        }
-        
-        /* Lightbox */
-        .lightbox-overlay {
-            position: fixed; inset: 0; background: rgba(0,0,0,0.9);
-            display: none; align-items: center; justify-content: center; z-index: 2000;
-            cursor: zoom-out;
-        }
-        .lightbox-overlay.active { display: flex; }
-        .lightbox-img {
-            max-width: 95%; max-height: 95%; object-fit: contain;
-            border-radius: 8px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-            animation: lightboxZoom 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-        @keyframes lightboxZoom {
-            from { transform: scale(0.9); opacity: 0; }
-            to { transform: scale(1); opacity: 1; }
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
         }
 
+        /* Lightbox */
+        .lightbox-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.9);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            cursor: zoom-out;
+        }
+
+        .lightbox-overlay.active {
+            display: flex;
+        }
+
+        .lightbox-img {
+            max-width: 95%;
+            max-height: 95%;
+            object-fit: contain;
+            border-radius: 8px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            animation: lightboxZoom 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        @keyframes lightboxZoom {
+            from {
+                transform: scale(0.9);
+                opacity: 0;
+            }
+
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        /* Leaderboard */
+        .leaderboard-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .leaderboard-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 14px 16px;
+            background: var(--bg-card);
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.02);
+            transition: transform 0.2s;
+        }
+
+        .leaderboard-item:hover {
+            transform: scale(1.02);
+        }
+
+        .leaderboard-rank {
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            font-weight: 800;
+            font-size: 0.9rem;
+            background: var(--bg-input);
+            color: var(--text-muted);
+        }
+
+        .rank-1 {
+            background: linear-gradient(135deg, #ffd700, #ff8c00);
+            color: white;
+            box-shadow: 0 4px 10px rgba(255, 215, 0, 0.4);
+        }
+
+        .rank-2 {
+            background: linear-gradient(135deg, #c0c0c0, #7f8c8d);
+            color: white;
+            box-shadow: 0 4px 10px rgba(192, 192, 192, 0.4);
+        }
+
+        .rank-3 {
+            background: linear-gradient(135deg, #cd7f32, #8b4513);
+            color: white;
+            box-shadow: 0 4px 10px rgba(205, 127, 50, 0.4);
+        }
+
+        .leaderboard-name {
+            flex: 1;
+            font-weight: 600;
+            font-size: 1rem;
+            color: var(--text-primary);
+        }
+
+        .leaderboard-score {
+            font-family: 'Courier New', monospace;
+            font-weight: 800;
+            font-size: 1.1rem;
+            color: var(--primary);
+        }
+
+        .leaderboard-score.game {
+            color: var(--accent);
+        }
     </style>
 </head>
+
 <body>
     <div class="bg-gradient"></div>
 
@@ -449,7 +838,8 @@
         <section id="sec-evaluations" class="tab-content">
             <!-- Admin/Staff 切換按鈕 -->
             <div class="eval-toggle" id="eval-toggle-container" style="display: none;">
-                <button class="eval-toggle-btn active" id="toggle-view" onclick="switchEvalMode('view')">👁️ 我的進度</button>
+                <button class="eval-toggle-btn active" id="toggle-view" onclick="switchEvalMode('view')">👁️
+                    我的進度</button>
                 <button class="eval-toggle-btn" id="toggle-edit" onclick="switchEvalMode('edit')">⚙️ 考核管理</button>
             </div>
 
@@ -462,17 +852,23 @@
                             <span class="progress-title">🎯 基本分數</span>
                             <span class="progress-status" id="status-base">載入中</span>
                         </div>
-                        <div class="progress-bar-bg"><div class="progress-bar-fill" id="bar-base"></div></div>
-                        <div style="text-align: right; font-size: 0.8rem; margin-top: 4px; color: var(--text-muted);" id="text-base">0 / 0</div>
+                        <div class="progress-bar-bg">
+                            <div class="progress-bar-fill" id="bar-base"></div>
+                        </div>
+                        <div style="text-align: right; font-size: 0.8rem; margin-top: 4px; color: var(--text-muted);"
+                            id="text-base">0 / 0</div>
                     </div>
-                    
+
                     <div class="progress-section">
                         <div class="progress-header">
                             <span class="progress-title">💬 互動分數</span>
                             <span class="progress-status" id="status-interact">載入中</span>
                         </div>
-                        <div class="progress-bar-bg"><div class="progress-bar-fill" id="bar-interact"></div></div>
-                        <div style="text-align: right; font-size: 0.8rem; margin-top: 4px; color: var(--text-muted);" id="text-interact">0 / 0</div>
+                        <div class="progress-bar-bg">
+                            <div class="progress-bar-fill" id="bar-interact"></div>
+                        </div>
+                        <div style="text-align: right; font-size: 0.8rem; margin-top: 4px; color: var(--text-muted);"
+                            id="text-interact">0 / 0</div>
                     </div>
 
                     <div class="progress-section">
@@ -480,8 +876,11 @@
                             <span class="progress-title">🤝 團長見面</span>
                             <span class="progress-status" id="status-meeting">載入中</span>
                         </div>
-                        <div class="progress-bar-bg"><div class="progress-bar-fill" id="bar-meeting"></div></div>
-                        <div style="text-align: right; font-size: 0.8rem; margin-top: 4px; color: var(--text-muted);" id="text-meeting">0 / 0</div>
+                        <div class="progress-bar-bg">
+                            <div class="progress-bar-fill" id="bar-meeting"></div>
+                        </div>
+                        <div style="text-align: right; font-size: 0.8rem; margin-top: 4px; color: var(--text-muted);"
+                            id="text-meeting">0 / 0</div>
                     </div>
 
                     <div class="eval-summary">
@@ -497,11 +896,14 @@
                 </div>
             </div>
 
-            <!-- Admin/Staff 視角 -->
             <div id="eval-admin-view" style="display: none;">
-                <h2 style="margin-bottom: 16px;">成員考核管理</h2>
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+                    <h2 style="margin:0;">成員考核管理</h2>
+                    <button class="action-btn" onclick="switchTab('leaderboard', document.querySelector('.nav-item:last-child'))" style="border-color:var(--primary); color:var(--primary);">🏆 查看排行榜</button>
+                </div>
                 <div class="input-wrapper" style="margin-bottom: 16px;">
-                    <input type="text" class="form-input" id="eval-search" placeholder="搜尋成員名稱或帳號..." onkeyup="filterMembers()">
+                    <input type="text" class="form-input" id="eval-search" placeholder="搜尋成員名稱或帳號..."
+                        onkeyup="filterMembers()">
                 </div>
                 <div id="member-list">
                     <!-- 成員列表由 JS 生成 -->
@@ -516,10 +918,15 @@
 
         <!-- 🏆 排行 -->
         <section id="sec-leaderboard" class="tab-content">
-            <div class="wip-container">
-                <div class="wip-icon">🏆</div>
-                <h2>排行榜</h2>
-                <p style="margin-top: 8px;">考核與遊戲排名系統建置中<br>敬請期待！</p>
+            <h2 style="margin-bottom: 16px;">排行榜</h2>
+            <!-- 排行榜切換按鈕 -->
+            <div class="eval-toggle" style="margin-bottom: 16px;">
+                <button class="eval-toggle-btn active" id="btn-leader-eval"
+                    onclick="switchLeaderboard('eval')">考核排行榜</button>
+                <button class="eval-toggle-btn" id="btn-leader-game" onclick="switchLeaderboard('game')">遊戲排行榜</button>
+            </div>
+            <div id="leaderboard-container" class="leaderboard-list">
+                <div style="text-align:center; padding: 40px; color: var(--text-muted);">載入中...</div>
             </div>
         </section>
     </main>
@@ -583,22 +990,26 @@
 
             <!-- 目前總分摘要 -->
             <div style="display:flex; gap:8px; margin-bottom:16px; font-size:0.85rem;">
-                <div style="flex:1; background:var(--bg-input); padding:8px 12px; border-radius:8px; text-align:center;">
+                <div
+                    style="flex:1; background:var(--bg-input); padding:8px 12px; border-radius:8px; text-align:center;">
                     <div style="color:var(--text-muted);">🎯 基本</div>
                     <div style="font-weight:700;" id="eval-sum-base">0/0</div>
                 </div>
-                <div style="flex:1; background:var(--bg-input); padding:8px 12px; border-radius:8px; text-align:center;">
+                <div
+                    style="flex:1; background:var(--bg-input); padding:8px 12px; border-radius:8px; text-align:center;">
                     <div style="color:var(--text-muted);">💬 互動</div>
                     <div style="font-weight:700;" id="eval-sum-interact">0/0</div>
                 </div>
-                <div style="flex:1; background:var(--bg-input); padding:8px 12px; border-radius:8px; text-align:center;">
+                <div
+                    style="flex:1; background:var(--bg-input); padding:8px 12px; border-radius:8px; text-align:center;">
                     <div style="color:var(--text-muted);">🤝 見面</div>
                     <div style="font-weight:700;" id="eval-sum-meeting">0/0</div>
                 </div>
             </div>
 
             <!-- 門檻設定（僅 Admin） -->
-            <div id="threshold-section" style="display:none; margin-bottom:16px; padding:12px; border:1px dashed var(--border); border-radius:12px;">
+            <div id="threshold-section"
+                style="display:none; margin-bottom:16px; padding:12px; border:1px dashed var(--border); border-radius:12px;">
                 <div style="font-weight:600; margin-bottom:10px; font-size:0.9rem;">⚙️ 門檻設定（僅限管理員）</div>
                 <div style="display:flex; gap:8px;">
                     <div class="form-group" style="flex:1;">
@@ -674,13 +1085,13 @@
     <!-- Supabase SDK -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="config.js"></script>
-    
+
     <script>
         // ============================================
         // 1. 系統初始化與認證
         // ============================================
         const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-        
+
         let currentUser = null;
         let userData = null;
         let allMembersData = []; // for admin eval search
@@ -703,7 +1114,7 @@
                 const { data, error } = await sb.from('users').select('*').eq('id', currentUser.id).single();
                 if (error) throw error;
                 userData = data;
-                
+
                 // 設定 Header
                 document.getElementById('header-name').textContent = userData.display_name;
                 const roleBadge = document.getElementById('header-role');
@@ -712,17 +1123,54 @@
 
                 // 初始化畫面權限
                 setupPermissions();
-                
+
                 // 隱藏載入畫面
                 document.getElementById('loader').style.opacity = '0';
                 setTimeout(() => document.getElementById('loader').style.display = 'none', 500);
 
                 // 預設載入首頁資料
                 loadTabContent('announcements');
+
+                // 監聽來自遊戲 Iframe 的分數訊息
+                window.addEventListener('message', async (event) => {
+                    if (event.data.type === 'GAME_SCORE') {
+                        const newScore = event.data.score;
+                        console.log('Received game score:', newScore);
+                        await handleNewGameScore(newScore);
+                    }
+                });
             } catch (err) {
                 console.error('Error fetching user data:', err);
                 alert('載入使用者資料失敗，請重新登入');
                 handleLogout();
+            }
+        }
+
+        // 處理新的遊戲分數 (改為紀錄最高轉數)
+        async function handleNewGameScore(score) {
+            try {
+                // 取得目前的最高轉數
+                const { data: current, error: fetchError } = await sb
+                    .from('users')
+                    .select('game_max_spins')
+                    .eq('id', currentUser.id)
+                    .single();
+
+                if (fetchError) throw fetchError;
+
+                const oldMaxSpins = current.game_max_spins || 0;
+
+                if (score > oldMaxSpins) {
+                    const { error: updateError } = await sb
+                        .from('users')
+                        .update({ game_max_spins: score })
+                        .eq('id', currentUser.id);
+
+                    if (updateError) throw updateError;
+                    console.log('New max spins saved!', score);
+                }
+            } catch (err) {
+                console.error('Error updating max spins:', err);
             }
         }
 
@@ -750,12 +1198,12 @@
         function loadTabContent(tabId) {
             if (tabId === 'announcements') fetchAnnouncements();
             if (tabId === 'evaluations') fetchEvaluations();
-            // game, upload, leaderboard 目前不需 API 呼叫
+            if (tabId === 'leaderboard') loadLeaderboard();
         }
 
         function setupPermissions() {
             const isAdminOrStaff = ['admin', 'staff'].includes(userData.role);
-            
+
             // 公告區：發布按鈕
             if (isAdminOrStaff) {
                 document.getElementById('fab-add-announcement').classList.add('visible');
@@ -776,6 +1224,58 @@
         function closeModal(id) { document.getElementById(id).classList.remove('active'); }
 
         // ============================================
+        // 排行榜功能 (Leaderboard)
+        // ============================================
+        let currentLeaderboardType = 'eval';
+        function switchLeaderboard(type) {
+            currentLeaderboardType = type;
+            document.getElementById('btn-leader-eval').classList.toggle('active', type === 'eval');
+            document.getElementById('btn-leader-game').classList.toggle('active', type === 'game');
+            loadLeaderboard();
+        }
+
+        async function loadLeaderboard() {
+            const container = document.getElementById('leaderboard-container');
+            container.innerHTML = '<div style="text-align:center; padding: 40px; color: var(--text-muted);">載入中...</div>';
+
+            try {
+                const table = currentLeaderboardType === 'eval' ? 'leaderboard_eval' : 'leaderboard_game';
+                const { data, error } = await sb
+                    .from(table)
+                    .select('*')
+                    .limit(50);
+
+                if (error) throw error;
+
+                if (!data || data.length === 0) {
+                    container.innerHTML = '<div style="text-align:center; padding: 40px; color: var(--text-muted);">目前尚無數據</div>';
+                    return;
+                }
+
+                container.innerHTML = data.map((item, index) => {
+                    const rank = index + 1;
+                    const rankClass = rank <= 3 ? `rank-${rank}` : '';
+                    const scoreValue = currentLeaderboardType === 'eval' ? item.total_score : item.game_max_spins;
+                    const scoreFormatted = Number(scoreValue).toLocaleString();
+                    const scoreLabel = currentLeaderboardType === 'game' ? ' 轉' : '';
+                    const scoreClass = currentLeaderboardType === 'game' ? 'game' : '';
+
+                    return `
+                        <div class="leaderboard-item">
+                            <div class="leaderboard-rank ${rankClass}">${rank}</div>
+                            <div class="leaderboard-name">${item.display_name}</div>
+                            <div class="leaderboard-score ${scoreClass}">${scoreFormatted}${scoreLabel}</div>
+                        </div>
+                    `;
+                }).join('');
+
+            } catch (err) {
+                console.error('Error loading leaderboard:', err);
+                container.innerHTML = '<div style="text-align:center; padding: 40px; color: var(--error);">載入失敗，請稍後再試</div>';
+            }
+        }
+
+        // ============================================
         // 3. 公告功能 (Announcements)
         // ============================================
         async function fetchAnnouncements() {
@@ -785,7 +1285,7 @@
                     .from('announcements')
                     .select(`*, users!announcements_author_id_fkey(display_name)`)
                     .order('created_at', { ascending: false });
-                
+
                 if (error) throw error;
 
                 if (data.length === 0) {
@@ -798,7 +1298,7 @@
                 const readIds = new Set(reads?.map(r => r.announcement_id) || []);
 
                 const isAdminOrStaff = ['admin', 'staff'].includes(userData.role);
-                
+
                 listEl.innerHTML = data.map(ann => `
                     <div class="card announcement-card">
                         <div class="announcement-header">
@@ -837,14 +1337,14 @@
             const title = document.getElementById('ann-title').value.trim();
             const content = document.getElementById('ann-content').value.trim();
             const imageFile = document.getElementById('ann-image').files[0];
-            
-            if(!title || !content) {
+
+            if (!title || !content) {
                 alert('請填寫標題與內容');
                 return;
             }
 
             let imageUrl = null;
-            
+
             // 若有上傳圖片
             if (imageFile) {
                 const fileExt = imageFile.name.split('.').pop();
@@ -852,7 +1352,7 @@
                 const { data: uploadData, error: uploadErr } = await sb.storage
                     .from('images')
                     .upload(`announcements/${fileName}`, imageFile);
-                
+
                 if (uploadErr) {
                     alert('圖片上傳失敗: ' + uploadErr.message);
                     return;
@@ -863,7 +1363,7 @@
 
             // 寫入資料庫
             const { error } = await sb.from('announcements').insert({
-                title, content, 
+                title, content,
                 image_url: imageUrl,
                 author_id: currentUser.id
             });
@@ -877,7 +1377,7 @@
         }
 
         async function deleteAnnouncement(id) {
-            if(!confirm('確定要刪除這則公告嗎？')) return;
+            if (!confirm('確定要刪除這則公告嗎？')) return;
             const { error } = await sb.from('announcements').delete().eq('id', id);
             if (error) alert('刪除失敗');
             else fetchAnnouncements();
@@ -903,7 +1403,7 @@
             openModal('modal-read-status');
             const listEl = document.getElementById('read-status-list');
             listEl.innerHTML = '<div style="text-align:center;padding:20px;color:var(--text-muted);">載入中...</div>';
-            
+
             try {
                 // Ensure allMembersData is loaded (we need member list to compare)
                 if (!allMembersData || allMembersData.length === 0) {
@@ -917,21 +1417,21 @@
                 const readUserIds = new Set(reads.map(r => r.user_id));
                 const readMembers = [];
                 const unreadMembers = [];
-                
+
                 allMembersData.forEach(m => {
                     if (readUserIds.has(m.id)) readMembers.push(m);
                     else unreadMembers.push(m);
                 });
-                
+
                 const renderList = (arr, label) => {
                     if (arr.length === 0) return `<div style="margin-bottom:16px;"><b>${label} (0)</b><br><span style="color:var(--text-muted);font-size:0.85rem;">無</span></div>`;
-                    return `<div style="margin-bottom:16px;"><b>${label} (${arr.length})</b><div style="margin-top:8px;">` + 
-                           arr.map(m => `<span style="display:inline-block; margin:0 8px 8px 0; font-size:0.85rem; background:var(--bg-card); border:1px solid var(--border); padding:4px 8px; border-radius:12px;">${m.email.split('@')[0]} ${escapeHTML(m.display_name)}</span>`).join('') +
-                           `</div></div>`;
+                    return `<div style="margin-bottom:16px;"><b>${label} (${arr.length})</b><div style="margin-top:8px;">` +
+                        arr.map(m => `<span style="display:inline-block; margin:0 8px 8px 0; font-size:0.85rem; background:var(--bg-card); border:1px solid var(--border); padding:4px 8px; border-radius:12px;">${m.email.split('@')[0]} ${escapeHTML(m.display_name)}</span>`).join('') +
+                        `</div></div>`;
                 };
-                
+
                 listEl.innerHTML = renderList(readMembers, '✅ 已讀') + renderList(unreadMembers, '❌ 未讀');
-            } catch(err) {
+            } catch (err) {
                 listEl.innerHTML = '<div style="color:var(--error);">載入失敗: ' + err.message + '</div>';
             }
         }
@@ -940,7 +1440,7 @@
             document.getElementById('lightbox-img').src = src;
             document.getElementById('lightbox').classList.add('active');
         }
-        
+
         function closeLightbox() {
             document.getElementById('lightbox').classList.remove('active');
         }
@@ -951,7 +1451,7 @@
         async function fetchEvaluations() {
             // 所有人都會抓自己的資料
             await fetchOwnEvaluation();
-            
+
             // 若為 admin/staff，顯示切換按鈕並額外抓取列表
             if (['admin', 'staff'].includes(userData.role)) {
                 document.getElementById('eval-toggle-container').style.display = 'flex';
@@ -968,7 +1468,7 @@
             const isView = mode === 'view';
             document.getElementById('toggle-view').classList.toggle('active', isView);
             document.getElementById('toggle-edit').classList.toggle('active', !isView);
-            
+
             document.getElementById('eval-member-view').style.display = isView ? 'block' : 'none';
             document.getElementById('eval-admin-view').style.display = isView ? 'none' : 'block';
         }
@@ -978,11 +1478,11 @@
             try {
                 const { data, error } = await sb.from('evaluations').select('*').eq('user_id', currentUser.id).single();
                 if (error && error.code !== 'PGRST116') throw error; // PGRST116 is not found
-                
-                const ev = data || { 
-                    base_score: 0, base_threshold: 0, 
-                    interaction_score: 0, interaction_threshold: 0, 
-                    meeting_score: 0, meeting_threshold: 0 
+
+                const ev = data || {
+                    base_score: 0, base_threshold: 0,
+                    interaction_score: 0, interaction_threshold: 0,
+                    meeting_score: 0, meeting_threshold: 0
                 };
 
                 updateProgressBar('base', ev.base_score, ev.base_threshold);
@@ -1043,16 +1543,16 @@
                         </div>`;
                     }).join('');
                 }
-            } catch(e) { console.error(e); }
+            } catch (e) { console.error(e); }
         }
 
         function updateProgressBar(id, score, threshold) {
             const bar = document.getElementById(`bar-${id}`);
             const text = document.getElementById(`text-${id}`);
             const status = document.getElementById(`status-${id}`);
-            
+
             text.textContent = `${score} / ${threshold}`;
-            
+
             if (threshold === 0) {
                 bar.style.width = '0%';
                 status.textContent = '無門檻';
@@ -1090,7 +1590,7 @@
                 if (error) throw error;
                 allMembersData = data;
                 renderMemberList(data);
-            } catch(err) {
+            } catch (err) {
                 console.error(err);
             }
         }
@@ -1107,8 +1607,8 @@
                 const ev = rawEv
                     ? (Array.isArray(rawEv) ? (rawEv[0] || null) : rawEv)
                     : null;
-                const safeEv = ev || { base_score:0, base_threshold:0, interaction_score:0, interaction_threshold:0, meeting_score:0, meeting_threshold:0 };
-                
+                const safeEv = ev || { base_score: 0, base_threshold: 0, interaction_score: 0, interaction_threshold: 0, meeting_score: 0, meeting_threshold: 0 };
+
                 const bPass = safeEv.base_threshold > 0 && safeEv.base_score >= safeEv.base_threshold;
                 const iPass = safeEv.interaction_threshold > 0 && safeEv.interaction_score >= safeEv.interaction_threshold;
                 const mPass = safeEv.meeting_threshold > 0 && safeEv.meeting_score >= safeEv.meeting_threshold;
@@ -1118,13 +1618,13 @@
                 const mClass = safeEv.meeting_threshold > 0 ? (mPass ? 'pass' : 'fail') : '';
 
                 // 把 user 和 evaluation 資料轉成 JSON 存在按鈕的屬性裡，方便點擊時使用
-                const encodedData = encodeURIComponent(JSON.stringify({...safeEv, id: user.id, name: user.display_name}));
+                const encodedData = encodeURIComponent(JSON.stringify({ ...safeEv, id: user.id, name: user.display_name }));
 
                 return `
                     <div class="member-list-item" onclick="openEvalModal('${encodedData}')">
                         <div class="member-info">
                             <span class="member-name">
-                                ${user.role==='staff' ? '🛡️ ' : ''}${escapeHTML(user.display_name)}
+                                ${user.role === 'staff' ? '🛡️ ' : ''}${escapeHTML(user.display_name)}
                             </span>
                             <span class="member-id">${user.email.split('@')[0]}</span>
                         </div>
@@ -1140,8 +1640,8 @@
 
         function filterMembers() {
             const query = document.getElementById('eval-search').value.toLowerCase();
-            const filtered = allMembersData.filter(u => 
-                u.display_name.toLowerCase().includes(query) || 
+            const filtered = allMembersData.filter(u =>
+                u.display_name.toLowerCase().includes(query) ||
                 u.email.toLowerCase().includes(query)
             );
             renderMemberList(filtered);
@@ -1285,7 +1785,7 @@
         // ============================================
         function escapeHTML(str) {
             if (!str) return '';
-            return str.replace(/[&<>'"]/g, 
+            return str.replace(/[&<>'"]/g,
                 tag => ({
                     '&': '&amp;',
                     '<': '&lt;',
@@ -1301,4 +1801,5 @@
 
     </script>
 </body>
+
 </html>

@@ -28,7 +28,7 @@
             color: white;
             transition: background-color 0.3s;
         }
-        
+
         .game-card {
             background: #2c3e50;
             padding: 1rem;
@@ -315,15 +315,16 @@
             display: flex;
             flex-wrap: wrap;
             /* 允許手機螢幕換行 */
-            align-items: flex-end;
+            align-items: center;
             justify-content: space-around;
             background: rgba(0, 0, 0, 0.3);
-            padding: 10px 8px;
+            padding: 25px 10px;
             border-radius: 12px;
             border: 1px solid #555;
             box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.5);
-            margin-bottom: 0.5rem;
-            gap: 5px;
+            margin-bottom: 0;
+            gap: 15px;
+            min-height: 150px;
         }
 
         .credit-display {
@@ -529,8 +530,9 @@
             text-align: center;
             color: #fff;
             box-shadow: 0 0 30px rgba(241, 196, 15, 0.4);
-            max-height: 90vh;
-            overflow-y: auto;
+            max-height: 80vh;
+            display: flex;
+            flex-direction: column;
         }
 
         .modal-stat-box {
@@ -540,6 +542,9 @@
             border-radius: 10px;
             margin-bottom: 15px;
             font-size: 0.95rem;
+            overflow-y: auto;
+            flex: 1;
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         .modal-stat-row {
@@ -561,12 +566,33 @@
             .game-card {
                 padding: 0.5rem;
             }
-            h1 { font-size: 1.2rem; }
-            .control-panel { padding: 4px 8px; font-size: 0.75rem; margin-bottom: 8px; }
-            .bottom-controls { padding: 8px 5px; margin-bottom: 0.5rem; }
-            .number { height: clamp(50px, 13vh, 83px) !important; }
-            .reel-window { height: clamp(150px, 40vh, 250px) !important; }
-            .win-line { height: clamp(50px, 13vh, 83px) !important; }
+
+            h1 {
+                font-size: 1.2rem;
+            }
+
+            .control-panel {
+                padding: 4px 8px;
+                font-size: 0.75rem;
+                margin-bottom: 8px;
+            }
+
+            .bottom-controls {
+                padding: 15px 5px;
+                margin-bottom: 0.5rem;
+            }
+
+            .number {
+                height: clamp(50px, 13vh, 83px) !important;
+            }
+
+            .reel-window {
+                height: clamp(150px, 40vh, 250px) !important;
+            }
+
+            .win-line {
+                height: clamp(50px, 13vh, 83px) !important;
+            }
         }
     </style>
 </head>
@@ -628,8 +654,6 @@
                 <div class="joystick-hint" id="hint-text">每次 -200</div>
             </div>
         </div>
-
-        <div id="result-msg">大放送機台！<br>破產機制：低於 200 進行結算</div>
     </div>
 
     <!-- 結算彈窗 -->
@@ -782,15 +806,12 @@
             initAudio();
             isAutoMode = !isAutoMode;
             const btn = document.getElementById('auto-btn');
-            const msg = document.getElementById('result-msg');
 
             if (isAutoMode) {
                 btn.classList.add('active');
-                msg.innerText = "🔁 AUTO 模式已啟動";
                 if (!isSpinning) spin();
             } else {
                 btn.classList.remove('active');
-                msg.innerText = "🛑 AUTO 模式已停止";
             }
         }
 
@@ -822,7 +843,6 @@
             const joystick = document.getElementById('joystick');
             const gameCard = document.getElementById('game-card');
             const prompt = document.getElementById('win-prompt');
-            const msg = document.getElementById('result-msg');
 
             joystick.classList.add('pulled');
 
@@ -832,7 +852,6 @@
             gameCard.classList.add('spinning');
             prompt.classList.remove('win-animate', 'huge-win');
             prompt.innerText = "🎰 瘋狂旋轉中...";
-            msg.innerText = isAutoMode ? "🔁 自動旋轉中..." : "祝你好運！";
             startFastLights();
 
             const strips = [
@@ -879,7 +898,6 @@
 
         function checkWin(targets) {
             const prompt = document.getElementById('win-prompt');
-            const msg = document.getElementById('result-msg');
             const gameCard = document.getElementById('game-card');
             const [v1, v2, v3] = targets;
 
@@ -962,18 +980,13 @@
                 document.getElementById('joystick').style.pointerEvents = 'none';
                 if (isAutoMode) toggleAuto();
 
-                msg.innerText = "餘額耗盡，正在結算...";
-
                 setTimeout(() => {
                     showGameOverModal();
                 }, 1000);
             } else {
                 isSpinning = false;
                 if (isAutoMode) {
-                    msg.innerText = "🔁 AUTO 模式：準備下一轉...";
                     setTimeout(() => { if (isAutoMode) spin(); }, 1000);
-                } else {
-                    msg.innerHTML = "點擊搖桿或 AUTO 繼續遊玩！";
                 }
             }
         }
@@ -1000,6 +1013,9 @@
             document.getElementById('modal-s7').innerText = cS7;
             document.getElementById('modal-lose').innerText = cLose;
 
+            // 將總轉數回傳給主頁面以更新排行榜
+            window.parent.postMessage({ type: 'GAME_SCORE', score: statSpins }, '*');
+
             document.getElementById('game-over-modal').classList.add('active');
         }
 
@@ -1015,7 +1031,6 @@
             document.getElementById('game-over-modal').classList.remove('active');
             isSpinning = false;
             document.getElementById('joystick').style.pointerEvents = 'auto';
-            document.getElementById('result-msg').innerHTML = "大放送機台！<br>破產機制：低於 200 進行結算";
             document.getElementById('win-prompt').innerText = "等待開獎...";
             document.getElementById('game-card').classList.remove('jackpot');
         }
