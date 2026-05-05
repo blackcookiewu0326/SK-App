@@ -589,9 +589,9 @@
             sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
             document.getElementById('setup-notice').classList.remove('show');
 
-            // 檢查是否已登入
-            sb.auth.getSession().then(({ data: { session } }) => {
-                if (session) {
+            // 檢查是否已登入 (強制伺服器驗證)
+            sb.auth.getUser().then(({ data: { user } }) => {
+                if (user) {
                     // 已登入，跳轉到主頁
                     window.location.href = 'index.html';
                 }
