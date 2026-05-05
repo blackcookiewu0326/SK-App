@@ -146,7 +146,7 @@
 
         .tab-content {
             display: none;
-            padding: 20px;
+            padding: 20px 20px 100px 20px; /* 增加底部 padding */
             animation: fadeIn 0.3s ease;
             min-height: 100%;
         }
@@ -936,7 +936,7 @@
                 </div>
             </div>
 
-            <div id="eval-admin-view" style="display: none;">
+            <div id="eval-admin-view" style="display: none; padding-bottom: 100px;">
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
                     <h2 style="margin:0;">成員考核管理</h2>
                     <button class="action-btn" onclick="switchTab('leaderboard', document.querySelector('.nav-item:last-child'))" style="border-color:var(--primary); color:var(--primary);">🏆 查看排行榜</button>

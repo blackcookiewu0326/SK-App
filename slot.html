@@ -32,7 +32,7 @@
             background-color: #2c3e50;
             width: 95%;
             max-width: 450px;
-            margin: 10px auto;
+            margin: 10px auto 120px auto; /* 增加底部外邊距 */
             padding: 1rem;
             border-radius: 20px;
             display: flex;
@@ -48,8 +48,34 @@
             box-shadow: var(--neon-glow);
         }
 
+        .game-card.frozen {
+            border-color: #3498db;
+            box-shadow: 0 0 20px #3498db, inset 0 0 20px rgba(52, 152, 219, 0.4);
+            animation: icePulse 1.5s infinite;
+        }
+        
         .game-card.jackpot {
-            animation: jackpotFlash 0.3s infinite, shake 0.4s infinite;
+            animation: jackpotFlash 0.3s infinite, shake 0.4s infinite !important;
+            border-width: 6px;
+            z-index: 20;
+        }
+
+        @keyframes icePulse {
+            0% { box-shadow: 0 0 15px #3498db; }
+            50% { box-shadow: 0 0 30px #5dade2, inset 0 0 10px #fff; }
+            100% { box-shadow: 0 0 15px #3498db; }
+        }
+
+        .game-card.frozen::before {
+            content: '❄️ ❄️ ❄️';
+            position: absolute;
+            top: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 1.2rem;
+            text-shadow: 0 0 10px #3498db;
+            pointer-events: none;
+            z-index: 10;
         }
 
         @keyframes jackpotFlash {
@@ -705,6 +731,7 @@
         const spinCost = 200;
         let isSpinning = false;
         let isAutoMode = false;
+        let freeSpinsLeft = 0; // 免費轉數次數
         let lightsInterval;
 
         // 統計數據變數
@@ -806,6 +833,23 @@
 
             let roi = statSpent > 0 ? (statWon / statSpent) * 100 : 0;
             document.getElementById('stat-roi').innerText = roi.toFixed(2) + '%';
+
+            // 顯示免費旋轉提示
+            const prompt = document.getElementById('win-prompt');
+            const gameCard = document.getElementById('game-card');
+            
+            if (freeSpinsLeft > 0) {
+                gameCard.classList.add('frozen');
+                if (!isSpinning) {
+                    prompt.innerHTML = `<span style="color:#3498db; font-weight:bold;">❄️ 凍結中！剩餘 ${freeSpinsLeft} 轉</span>`;
+                    prompt.style.borderColor = '#3498db';
+                }
+            } else {
+                gameCard.classList.remove('frozen');
+                if (!isSpinning) {
+                    prompt.style.borderColor = '#2ecc71';
+                }
+            }
         }
 
         function toggleAuto() {
@@ -829,8 +873,8 @@
         async function spin() {
             if (isSpinning) return;
 
-            // 擋下餘額不足的情形
-            if (score < spinCost) {
+            // 擋下餘額不足的情形 (除非還有免費旋轉)
+            if (freeSpinsLeft <= 0 && score < spinCost) {
                 showGameOverModal();
                 return;
             }
@@ -842,8 +886,14 @@
             document.querySelectorAll('.flash-blue, .flash-gold').forEach(el => el.classList.remove('flash-blue', 'flash-gold'));
 
             statSpins++;
-            statSpent += spinCost;
-            score -= spinCost;
+            
+            if (freeSpinsLeft > 0) {
+                freeSpinsLeft--;
+                // 免費旋轉：不扣 CREDIT，不增加總投入
+            } else {
+                statSpent += spinCost;
+                score -= spinCost;
+            }
             updateStatsUI();
 
             const joystick = document.getElementById('joystick');
@@ -857,7 +907,7 @@
             gameCard.classList.remove('jackpot');
             gameCard.classList.add('spinning');
             prompt.classList.remove('win-animate', 'huge-win');
-            prompt.innerText = "🎰 瘋狂旋轉中...";
+            prompt.innerText = freeSpinsLeft > 0 ? "🎁 免費旋轉中..." : "🎰 瘋狂旋轉中...";
             startFastLights();
 
             const strips = [
@@ -921,8 +971,9 @@
             let winAmount = 0;
 
             if (count7 === 3) {
-                cJackpot++; winAmount = 77777;
-                prompt.innerHTML = "🏆 大放送！！ JACKPOT！ (+77,777)";
+                cJackpot++; winAmount = 7777;
+                freeSpinsLeft = 20; // 獲得 20 轉免費旋轉
+                prompt.innerHTML = "🏆 JACKPOT！！ (+7,777)<br><span style='font-size:0.9rem;'>🎁 獲得 20 轉免費旋轉！</span>";
                 prompt.classList.add('win-animate', 'huge-win');
                 gameCard.classList.add('jackpot');
                 el1.classList.add('flash-gold'); el2.classList.add('flash-gold'); el3.classList.add('flash-gold');
@@ -931,7 +982,8 @@
             }
             else if (isThreeOfAKind) {
                 cTriple++; winAmount = 6666;
-                prompt.innerHTML = `🎉 狂暴三連號 ${v1}！<br>(+6,666)`;
+                freeSpinsLeft = 10; // 獲得 10 轉免費旋轉
+                prompt.innerHTML = `🎉 狂暴三連號 ${v1}！ (+6,666)<br><span style='font-size:0.9rem;'>🎁 獲得 10 轉免費旋轉！</span>`;
                 prompt.classList.add('win-animate', 'huge-win');
                 el1.classList.add('flash-gold'); el2.classList.add('flash-gold'); el3.classList.add('flash-gold');
                 soundHugeWin();
@@ -1027,7 +1079,8 @@
 
         // 重置遊戲
         function resetGame() {
-            score = 2000;
+            score = 2000 + (bonusSpins * 200);
+            freeSpinsLeft = 0;
             statSpins = 0; statSpent = 0; statWon = 0;
             cJackpot = 0; cTriple = 0; cD7 = 0; cD7x = 0; cDouble = 0; cS7 = 0; cLose = 0;
 
