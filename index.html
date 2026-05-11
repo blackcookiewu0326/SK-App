@@ -1730,7 +1730,7 @@
                     else scoreValue = item.total_checkins;
 
                     const scoreFormatted = Number(scoreValue).toLocaleString();
-                    const scoreLabel = currentLeaderboardType === 'game' ? ' 轉' : (currentLeaderboardType === 'checkin' ? ' 天' : '');
+                    const scoreLabel = currentLeaderboardType === 'game' ? '' : (currentLeaderboardType === 'checkin' ? ' 天' : '');
                     const scoreClass = currentLeaderboardType === 'game' ? 'game' : '';
 
                     return `
