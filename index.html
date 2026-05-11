@@ -1293,84 +1293,92 @@
 
                 // 檢查今日簽到狀態
                 checkTodayCheckIn();
-
-                // 監聽來自遊戲 Iframe 的訊息
-                window.addEventListener('message', async (event) => {
-                    if (event.data.type === 'GAME_READY') {
-                        const { data } = await sb.from('users').select('game_balance').eq('id', currentUser.id).single();
-                        event.source.postMessage({ type: 'INIT_BALANCE', balance: data?.game_balance || 0 }, '*');
-                    }
-                    if (event.data.type === 'SAVE_BALANCE') {
-                        const newBalance = event.data.balance;
-                        console.log('Saving game balance:', newBalance);
-                        await sb.from('users').update({
-                            game_balance: newBalance,
-                            game_max_spins: newBalance // 直接覆蓋排行榜為當前餘額
-                        }).eq('id', currentUser.id);
-                        if (!event.data.silent) {
-                            alert('✅ 已成功將餘額存入帳戶並更新排行榜！');
-                        }
-                    }
-                    if (event.data.type === 'BORROW_FUNDS') {
-                        // 1. 檢查考核總分 (基礎*1 + 互動*3 + 團長*3)
-                        const { data: evalData } = await sb.from('evaluations')
-                            .select('base_score, interaction_score, meeting_score')
-                            .eq('user_id', currentUser.id)
-                            .single();
-
-                        const totalScore = (evalData?.base_score || 0) * 1 + (evalData?.interaction_score || 0) * 3 + (evalData?.meeting_score || 0) * 3;
-                        if (totalScore < 1) {
-                            alert('❌ 總考核積分不足 1 分，無法借款！');
-                            event.source.postMessage({ type: 'BORROW_REJECTED' }, '*');
-                            return;
-                        }
-
-                        try {
-                            // 2. 扣 1 分 (新增 penalty 紀錄)
-                            const today = new Date().toISOString().split('T')[0];
-                            const { error: insertErr } = await sb.from('score_logs').insert({
-                                user_id: currentUser.id,
-                                category: 'penalty',
-                                score: -1,
-                                log_date: today,
-                                note: '破產借款 2000 資金',
-                                created_by: currentUser.id
-                            });
-                            if (insertErr) throw insertErr;
-
-                            // 3. 預設從基本分扣除 1 分以反映在總表
-                            await sb.from('evaluations').update({
-                                base_score: (evalData?.base_score || 0) - 1,
-                                updated_at: new Date().toISOString()
-                            }).eq('user_id', currentUser.id);
-
-                            // 4. 增加 2000 餘額
-                            const { data: uData } = await sb.from('users').select('game_balance').eq('id', currentUser.id).single();
-                            const newBalance = (uData?.game_balance || 0) + 2000;
-                            await sb.from('users').update({
-                                game_balance: newBalance,
-                                game_max_spins: newBalance
-                            }).eq('id', currentUser.id);
-
-                            // 5. 通知遊戲
-                            alert('✅ 借款成功！已花費 1 考核積分獲得 2000 資金。');
-                            event.source.postMessage({ type: 'BORROW_SUCCESS', balance: newBalance }, '*');
-
-                            // 刷新畫面資料
-                            fetchEvaluations();
-                            loadScoreLogs(currentUser.id);
-                        } catch (err) {
-                            alert('❌ 借款失敗: ' + err.message);
-                            event.source.postMessage({ type: 'BORROW_REJECTED' }, '*');
-                        }
-                    }
-                });
             } catch (err) {
                 console.error('Error fetching user data:', err);
                 alert('載入使用者資料失敗，請重新登入');
                 handleLogout();
             }
         }
+
+        // 監聽來自遊戲 Iframe 的訊息 (移至全域確保只註冊一次)
+        window.addEventListener('message', async (event) => {
+            if (!currentUser) return;
+            const data = event.data;
+
+            if (data.type === 'GAME_READY') {
+                const { data: uData } = await sb.from('users').select('game_balance').eq('id', currentUser.id).single();
+                event.source.postMessage({ type: 'INIT_BALANCE', balance: uData?.game_balance || 0 }, '*');
+            }
+            
+            if (data.type === 'SAVE_BALANCE') {
+                const newBalance = data.balance;
+                await sb.from('users').update({
+                    game_balance: newBalance,
+                    game_max_spins: newBalance 
+                }).eq('id', currentUser.id);
+                if (!data.silent) {
+                    alert('✅ 已成功將餘額存入帳戶並更新排行榜！');
+                }
+            }
+
+            if (data.type === 'BORROW_FUNDS') {
+                try {
+                    // 1. 檢查考核總分
+                    const { data: evalData } = await sb.from('evaluations')
+                        .select('base_score, interaction_score, meeting_score')
+                        .eq('user_id', currentUser.id)
+                        .single();
+
+                    const totalScore = (evalData?.base_score || 0) * 1 + (evalData?.interaction_score || 0) * 3 + (evalData?.meeting_score || 0) * 3;
+                    
+                    if (totalScore < 1) {
+                        alert('❌ 總考核積分不足 1 分，無法借款！');
+                        event.source.postMessage({ type: 'BORROW_REJECTED' }, '*');
+                        return;
+                    }
+
+                    // 2. 扣 1 分 (新增 penalty 紀錄)
+                    const today = new Date().toISOString().split('T')[0];
+                    const { error: insertErr } = await sb.from('score_logs').insert({
+                        user_id: currentUser.id,
+                        category: 'penalty',
+                        score: -1,
+                        log_date: today,
+                        note: '破產借款 2000 資金',
+                        created_by: currentUser.id
+                    });
+                    if (insertErr) throw insertErr;
+
+                    // 3. 更新總表 (使用 upsert 確保紀錄存在)
+                    await sb.from('evaluations').upsert({
+                        user_id: currentUser.id,
+                        base_score: (evalData?.base_score || 0) - 1,
+                        updated_at: new Date().toISOString()
+                    }, { onConflict: 'user_id' });
+
+                    // 4. 增加 2000 餘額
+                    const { data: uData } = await sb.from('users').select('game_balance').eq('id', currentUser.id).single();
+                    const newBalance = (uData?.game_balance || 0) + 2000;
+                    await sb.from('users').update({
+                        game_balance: newBalance,
+                        game_max_spins: newBalance
+                    }).eq('id', currentUser.id);
+
+                    // 5. 通知遊戲
+                    alert('✅ 借款成功！已花費 1 考核積分獲得 2000 資金。');
+                    event.source.postMessage({ type: 'BORROW_SUCCESS', balance: newBalance }, '*');
+
+                    // 刷新 UI
+                    fetchEvaluations();
+                    loadScoreLogs(currentUser.id);
+
+                } catch (err) {
+                    console.error('Borrow error:', err);
+                    alert('❌ 借款失敗: ' + err.message);
+                    event.source.postMessage({ type: 'BORROW_REJECTED' }, '*');
+                }
+            }
+        });
 
         async function handleLogout() {
             await sb.auth.signOut();
