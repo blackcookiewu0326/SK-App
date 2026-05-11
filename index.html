@@ -1044,7 +1044,7 @@
 
         <!-- 🎰 遊戲 -->
         <section id="sec-game" class="tab-content">
-            <iframe id="game-frame" src="slot.html" title="Slot Game"></iframe>
+            <iframe id="game-frame" src="" title="Slot Game"></iframe>
         </section>
 
         <!-- 🏆 排行 -->
@@ -1121,6 +1121,14 @@
             </div>
             <input type="hidden" id="eval-user-id">
 
+            <!-- 加權總分顯示 -->
+            <div
+                style="background:var(--primary-light); padding:10px; border-radius:12px; margin-bottom:16px; text-align:center; border: 1px solid var(--primary);">
+                <div style="font-size:0.8rem; color:var(--primary-dark); font-weight:600;">加權總考核積分 (基礎*1 + 互動*3 + 團長*3)
+                </div>
+                <div style="font-size:1.6rem; font-weight:900; color:var(--primary);" id="eval-sum-total">0</div>
+            </div>
+
             <!-- 目前總分摘要 -->
             <div style="display:flex; gap:8px; margin-bottom:16px; font-size:0.85rem;">
                 <div
@@ -1181,7 +1189,8 @@
                 <!-- 互動對象複選區塊（僅選擇「互動分數」時顯示） -->
                 <div class="form-group" id="group-log-interaction" style="display: none;">
                     <label class="form-label">👥 互動對象（可複選，所有參與者將自動同步紀錄）</label>
-                    <div id="interaction-partner-list" style="max-height: 160px; overflow-y: auto; background: var(--bg-card); border: 1px solid var(--border); border-radius: 10px; padding: 8px; display: grid; grid-template-columns: 1fr 1fr; gap: 2px;">
+                    <div id="interaction-partner-list"
+                        style="max-height: 160px; overflow-y: auto; background: var(--bg-card); border: 1px solid var(--border); border-radius: 10px; padding: 8px; display: grid; grid-template-columns: 1fr 1fr; gap: 2px;">
                         <!-- 勾選框由 JS 動態生成 -->
                     </div>
                 </div>
@@ -1294,7 +1303,7 @@
                     if (event.data.type === 'SAVE_BALANCE') {
                         const newBalance = event.data.balance;
                         console.log('Saving game balance:', newBalance);
-                        await sb.from('users').update({ 
+                        await sb.from('users').update({
                             game_balance: newBalance,
                             game_max_spins: newBalance // 直接覆蓋排行榜為當前餘額
                         }).eq('id', currentUser.id);
@@ -1308,7 +1317,7 @@
                             .select('base_score, interaction_score, meeting_score')
                             .eq('user_id', currentUser.id)
                             .single();
-                        
+
                         const totalScore = (evalData?.base_score || 0) * 1 + (evalData?.interaction_score || 0) * 3 + (evalData?.meeting_score || 0) * 3;
                         if (totalScore < 1) {
                             alert('❌ 總考核積分不足 1 分，無法借款！');
@@ -1338,15 +1347,15 @@
                             // 4. 增加 2000 餘額
                             const { data: uData } = await sb.from('users').select('game_balance').eq('id', currentUser.id).single();
                             const newBalance = (uData?.game_balance || 0) + 2000;
-                            await sb.from('users').update({ 
-                                game_balance: newBalance, 
-                                game_max_spins: newBalance 
+                            await sb.from('users').update({
+                                game_balance: newBalance,
+                                game_max_spins: newBalance
                             }).eq('id', currentUser.id);
 
                             // 5. 通知遊戲
                             alert('✅ 借款成功！已花費 1 考核積分獲得 2000 資金。');
                             event.source.postMessage({ type: 'BORROW_SUCCESS', balance: newBalance }, '*');
-                            
+
                             // 刷新畫面資料
                             fetchEvaluations();
                             loadScoreLogs(currentUser.id);
@@ -1404,7 +1413,7 @@
                 }
                 // 顯示瀏覽器內建的離開確認視窗，警告玩家並拖延時間讓存檔非同步完成
                 event.preventDefault();
-                event.returnValue = ''; 
+                event.returnValue = '';
             }
         });
 
@@ -1659,11 +1668,9 @@
 
         function updateGameBonus() {
             const frame = document.getElementById('game-frame');
-            const targetSrc = 'slot.html';
-
-            // 確保遊戲機台正確載入
-            if (!frame.src.includes(targetSrc)) {
-                frame.src = targetSrc;
+            // 如果 iframe 還沒載入過，或是 src 是空的，就載入最新版的 slot.html
+            if (!frame.src || frame.src === '' || frame.src === window.location.href) {
+                frame.src = 'slot.html?v=' + new Date().getTime();
             }
         }
 
@@ -2180,6 +2187,11 @@
 
             // 載入歷史紀錄
             loadScoreLogs(data.id);
+
+            // 設定加權總分
+            const totalWeighted = (data.base_score || 0) * 1 + (data.interaction_score || 0) * 3 + (data.meeting_score || 0) * 3;
+            document.getElementById('eval-sum-total').textContent = totalWeighted;
+
             openModal('modal-eval');
         }
 
@@ -2318,7 +2330,7 @@
                     }
                     for (const [uid, count] of Object.entries(newPairsPerUser)) {
                         const addedScore = score * count;
-                        
+
                         // 更新考核總分
                         const { data: evalData, error: evalReadErr } = await sb.from('evaluations')
                             .select('interaction_score')
@@ -2411,6 +2423,10 @@
                     document.getElementById('eval-sum-base').textContent = `${freshEval.base_score}/${freshEval.base_threshold}`;
                     document.getElementById('eval-sum-interact').textContent = `${freshEval.interaction_score}/${freshEval.interaction_threshold}`;
                     document.getElementById('eval-sum-meeting').textContent = `${freshEval.meeting_score}/${freshEval.meeting_threshold}`;
+
+                    // 更新加權總分
+                    const totalWeighted = (freshEval.base_score || 0) * 1 + (freshEval.interaction_score || 0) * 3 + (freshEval.meeting_score || 0) * 3;
+                    document.getElementById('eval-sum-total').textContent = totalWeighted;
                 }
                 document.getElementById('log-score').value = 0;
                 document.getElementById('log-note').value = '';
