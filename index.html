@@ -1311,66 +1311,43 @@
             }
             
             if (data.type === 'SAVE_BALANCE') {
-                const newBalance = data.balance;
-                await sb.from('users').update({
-                    game_balance: newBalance,
-                    game_max_spins: newBalance 
-                }).eq('id', currentUser.id);
-                if (!data.silent) {
-                    alert('✅ 已成功將餘額存入帳戶並更新排行榜！');
+                try {
+                    const newBalance = data.balance;
+                    // 使用 RPC 儲存，避免 RLS 權限問題
+                    const { error } = await sb.rpc('save_game_balance', { 
+                        target_user_id: currentUser.id, 
+                        new_balance: newBalance 
+                    });
+                    if (error) throw error;
+                    
+                    if (!data.silent) {
+                        alert('✅ 已成功將餘額存入帳戶並更新排行榜！');
+                    }
+                } catch (err) {
+                    console.error('Save balance error:', err);
                 }
             }
 
             if (data.type === 'BORROW_FUNDS') {
                 try {
-                    // 1. 檢查考核總分
-                    const { data: evalData } = await sb.from('evaluations')
-                        .select('base_score, interaction_score, meeting_score')
-                        .eq('user_id', currentUser.id)
-                        .single();
-
-                    const totalScore = (evalData?.base_score || 0) * 1 + (evalData?.interaction_score || 0) * 3 + (evalData?.meeting_score || 0) * 3;
-                    
-                    if (totalScore < 1) {
-                        alert('❌ 總考核積分不足 1 分，無法借款！');
-                        event.source.postMessage({ type: 'BORROW_REJECTED' }, '*');
-                        return;
-                    }
-
-                    // 2. 扣 1 分 (新增 penalty 紀錄)
-                    const today = new Date().toISOString().split('T')[0];
-                    const { error: insertErr } = await sb.from('score_logs').insert({
-                        user_id: currentUser.id,
-                        category: 'penalty',
-                        score: -1,
-                        log_date: today,
-                        note: '破產借款 2000 資金',
-                        created_by: currentUser.id
+                    // 使用 RPC 處理借款 (交易處理 + 繞過 RLS)
+                    const { data: result, error } = await sb.rpc('handle_borrow_funds', { 
+                        target_user_id: currentUser.id 
                     });
-                    if (insertErr) throw insertErr;
 
-                    // 3. 更新總表 (使用 upsert 確保紀錄存在)
-                    await sb.from('evaluations').upsert({
-                        user_id: currentUser.id,
-                        base_score: (evalData?.base_score || 0) - 1,
-                        updated_at: new Date().toISOString()
-                    }, { onConflict: 'user_id' });
+                    if (error) throw error;
 
-                    // 4. 增加 2000 餘額
-                    const { data: uData } = await sb.from('users').select('game_balance').eq('id', currentUser.id).single();
-                    const newBalance = (uData?.game_balance || 0) + 2000;
-                    await sb.from('users').update({
-                        game_balance: newBalance,
-                        game_max_spins: newBalance
-                    }).eq('id', currentUser.id);
-
-                    // 5. 通知遊戲
-                    alert('✅ 借款成功！已花費 1 考核積分獲得 2000 資金。');
-                    event.source.postMessage({ type: 'BORROW_SUCCESS', balance: newBalance }, '*');
-
-                    // 刷新 UI
-                    fetchEvaluations();
-                    loadScoreLogs(currentUser.id);
+                    if (result.success) {
+                        alert('✅ 借款成功！已花費 1 考核積分獲得 2000 資金。');
+                        event.source.postMessage({ type: 'BORROW_SUCCESS', balance: result.new_balance }, '*');
+                        
+                        // 刷新 UI
+                        fetchEvaluations();
+                        loadScoreLogs(currentUser.id);
+                    } else {
+                        alert('❌ ' + result.message);
+                        event.source.postMessage({ type: 'BORROW_REJECTED' }, '*');
+                    }
 
                 } catch (err) {
                     console.error('Borrow error:', err);
