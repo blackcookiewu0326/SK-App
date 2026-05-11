@@ -146,7 +146,8 @@
 
         .tab-content {
             display: none;
-            padding: 20px 20px 100px 20px; /* 增加底部 padding */
+            padding: 20px 20px 100px 20px;
+            /* 增加底部 padding */
             animation: fadeIn 0.3s ease;
             min-height: 100%;
         }
@@ -489,34 +490,84 @@
 
         /* Check-in */
         .checkin-container {
-            padding: 24px; background: var(--bg-card); border-radius: 24px;
-            border: 1px solid var(--border); box-shadow: 0 10px 30px rgba(0,0,0,0.05);
-            text-align: center; margin-top: 20px;
+            padding: 24px;
+            background: var(--bg-card);
+            border-radius: 24px;
+            border: 1px solid var(--border);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+            text-align: center;
+            margin-top: 20px;
         }
+
         .checkin-grid {
-            display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin: 24px 0;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+            margin: 24px 0;
         }
+
         .checkin-day {
-            aspect-ratio: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
-            background: var(--bg-input); border-radius: 16px; border: 1px solid var(--border);
-            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1); position: relative;
+            aspect-ratio: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: var(--bg-input);
+            border-radius: 16px;
+            border: 1px solid var(--border);
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            position: relative;
         }
+
         .checkin-day.checked {
             background: linear-gradient(135deg, var(--primary), var(--primary-light));
-            color: white; border-color: transparent; transform: scale(1.05);
+            color: white;
+            border-color: transparent;
+            transform: scale(1.05);
             box-shadow: 0 8px 15px rgba(99, 102, 241, 0.3);
         }
-        .checkin-day.today { border: 2px solid var(--primary); }
-        .checkin-day .day-num { font-size: 0.75rem; opacity: 0.7; margin-bottom: 2px; }
-        .checkin-day .day-status { font-size: 1.2rem; }
+
+        .checkin-day.today {
+            border: 2px solid var(--primary);
+        }
+
+        .checkin-day .day-num {
+            font-size: 0.75rem;
+            opacity: 0.7;
+            margin-bottom: 2px;
+        }
+
+        .checkin-day .day-status {
+            font-size: 1.2rem;
+        }
+
         .checkin-day.checked::after {
-            content: '✓'; position: absolute; top: -5px; right: -5px;
-            background: var(--success); color: white; width: 20px; height: 20px;
-            border-radius: 50%; font-size: 12px; display: flex; align-items: center; justify-content: center;
+            content: '✓';
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: var(--success);
+            color: white;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             border: 2px solid white;
         }
-        .checkin-info { font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 20px; line-height: 1.5; }
-        .checkin-info b { color: var(--primary); }
+
+        .checkin-info {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+
+        .checkin-info b {
+            color: var(--primary);
+        }
 
         .btn {
             width: 100%;
@@ -858,19 +909,57 @@
 
         <!-- 📅 簽到 -->
         <section id="sec-checkin" class="tab-content">
-            <div class="checkin-container">
-                <h2 style="margin-bottom: 8px;">每日簽到</h2>
-                <div class="checkin-info" id="checkin-msg">
-                    連續簽到可獲得獎勵！<br>今日簽到成功：<b>遊戲初始轉數 +5</b>
-                </div>
-                
-                <div class="checkin-grid" id="checkin-grid">
-                    <!-- 7天簽到格子由 JS 生成 -->
+            <!-- Admin/Staff 切換按鈕 -->
+            <div class="eval-toggle" id="checkin-toggle-container" style="display: none; margin-bottom: 20px;">
+                <button class="eval-toggle-btn active" id="checkin-toggle-me" onclick="switchCheckInMode('me')">📅
+                    我的簽到</button>
+                <button class="eval-toggle-btn" id="checkin-toggle-all" onclick="switchCheckInMode('all')">👥
+                    成員狀況</button>
+            </div>
+
+            <!-- Member 視角 -->
+            <div id="checkin-member-view">
+                <div class="checkin-container">
+                    <h2 style="margin-bottom: 8px;">每日簽到</h2>
+                    <div class="checkin-info" id="checkin-msg">
+                        連續簽到可獲得獎勵！<br>今日簽到成功：<b>遊戲初始轉數 +5</b>
+                    </div>
+
+                    <div class="checkin-grid" id="checkin-grid">
+                        <!-- 7天簽到格子由 JS 生成 -->
+                    </div>
+
+                    <button class="btn btn-primary" id="btn-do-checkin" onclick="doCheckIn()" style="padding: 16px;">
+                        立即簽到
+                    </button>
                 </div>
 
-                <button class="btn btn-primary" id="btn-do-checkin" onclick="doCheckIn()" style="padding: 16px;">
-                    立即簽到
-                </button>
+                <div class="card" style="margin-top: 16px; text-align: left;">
+                    <div
+                        style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                        <span style="font-weight: 600; display: flex; align-items: center; gap: 6px;">📊 累積簽到</span>
+                        <span style="color: var(--primary); font-weight: 800; font-size: 1.2rem;"
+                            id="total-checkin-days">0 天</span>
+                    </div>
+                    <div style="font-weight: 600; margin-bottom: 8px; font-size: 0.9rem; color: var(--text-secondary);">
+                        📋 歷史紀錄</div>
+                    <div id="checkin-history-list"
+                        style="max-height: 200px; overflow-y: auto; font-size: 0.85rem; color: var(--text-secondary);">
+                        載入中...
+                    </div>
+                </div>
+            </div>
+
+            <!-- Admin 視角 -->
+            <div id="checkin-admin-view" style="display: none;">
+                <h2 style="margin-bottom: 16px;">成員簽到狀況</h2>
+                <div class="input-wrapper" style="margin-bottom: 16px;">
+                    <input type="text" class="form-input" id="checkin-search" placeholder="搜尋成員名稱或帳號..."
+                        onkeyup="filterCheckInMembers()">
+                </div>
+                <div id="checkin-member-list">
+                    <!-- 成員簽到列表由 JS 生成 -->
+                </div>
             </div>
         </section>
 
@@ -939,7 +1028,9 @@
             <div id="eval-admin-view" style="display: none; padding-bottom: 100px;">
                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
                     <h2 style="margin:0;">成員考核管理</h2>
-                    <button class="action-btn" onclick="switchTab('leaderboard', document.querySelector('.nav-item:last-child'))" style="border-color:var(--primary); color:var(--primary);">🏆 查看排行榜</button>
+                    <button class="action-btn"
+                        onclick="switchTab('leaderboard', document.querySelector('.nav-item:last-child'))"
+                        style="border-color:var(--primary); color:var(--primary);">🏆 查看排行榜</button>
                 </div>
                 <div class="input-wrapper" style="margin-bottom: 16px;">
                     <input type="text" class="form-input" id="eval-search" placeholder="搜尋成員名稱或帳號..."
@@ -962,8 +1053,10 @@
             <!-- 排行榜切換按鈕 -->
             <div class="eval-toggle" style="margin-bottom: 16px;">
                 <button class="eval-toggle-btn active" id="btn-leader-eval"
-                    onclick="switchLeaderboard('eval')">考核排行榜</button>
-                <button class="eval-toggle-btn" id="btn-leader-game" onclick="switchLeaderboard('game')">遊戲排行榜</button>
+                    onclick="switchLeaderboard('eval')">考核排行</button>
+                <button class="eval-toggle-btn" id="btn-leader-game" onclick="switchLeaderboard('game')">遊戲排行</button>
+                <button class="eval-toggle-btn" id="btn-leader-checkin"
+                    onclick="switchLeaderboard('checkin')">簽到排行</button>
             </div>
             <div id="leaderboard-container" class="leaderboard-list">
                 <div style="text-align:center; padding: 40px; color: var(--text-muted);">載入中...</div>
@@ -1085,6 +1178,13 @@
                         <input type="number" class="form-input" id="log-score" min="0" value="0">
                     </div>
                 </div>
+                <!-- 互動對象複選區塊（僅選擇「互動分數」時顯示） -->
+                <div class="form-group" id="group-log-interaction" style="display: none;">
+                    <label class="form-label">👥 互動對象（可複選，所有參與者將自動同步紀錄）</label>
+                    <div id="interaction-partner-list" style="max-height: 160px; overflow-y: auto; background: var(--bg-card); border: 1px solid var(--border); border-radius: 10px; padding: 8px; display: grid; grid-template-columns: 1fr 1fr; gap: 2px;">
+                        <!-- 勾選框由 JS 動態生成 -->
+                    </div>
+                </div>
                 <div class="form-group">
                     <label class="form-label">日期</label>
                     <input type="date" class="form-input" id="log-date">
@@ -1111,7 +1211,18 @@
                 <h3 class="modal-title" id="read-modal-title">公告已讀名單</h3>
                 <button class="modal-close" onclick="closeModal('modal-read-status')">×</button>
             </div>
-            <div id="read-status-list" style="max-height: 400px; overflow-y: auto;">
+        </div>
+    </div>
+    </div>
+
+    <!-- 模態框：檢視成員簽到歷史 -->
+    <div class="modal-overlay" id="modal-checkin-history">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3 class="modal-title"><span id="checkin-history-name"></span> 的簽到歷史</h3>
+                <button class="modal-close" onclick="closeModal('modal-checkin-history')">×</button>
+            </div>
+            <div id="checkin-history-detail" style="max-height: 400px; overflow-y: auto;">
                 載入中...
             </div>
         </div>
@@ -1170,7 +1281,7 @@
 
                 // 預設載入首頁資料
                 loadTabContent('announcements');
-                
+
                 // 檢查今日簽到狀態
                 checkTodayCheckIn();
 
@@ -1181,6 +1292,12 @@
                         console.log('Received game score:', newScore);
                         await handleNewGameScore(newScore);
                     }
+                });
+
+                // 監聽評分對象類別切換
+                document.getElementById('log-category').addEventListener('change', function () {
+                    const group = document.getElementById('group-log-interaction');
+                    group.style.display = this.value === 'interaction' ? 'block' : 'none';
                 });
             } catch (err) {
                 console.error('Error fetching user data:', err);
@@ -1242,8 +1359,14 @@
             if (tabId === 'announcements') fetchAnnouncements();
             if (tabId === 'evaluations') fetchEvaluations();
             if (tabId === 'leaderboard') loadLeaderboard();
-            if (tabId === 'checkin') loadCheckInData();
-            
+            if (tabId === 'checkin') {
+                loadCheckInData();
+                // 若為 admin/staff，顯示簽到切換按鈕
+                if (['admin', 'staff'].includes(userData.role)) {
+                    document.getElementById('checkin-toggle-container').style.display = 'flex';
+                }
+            }
+
             // 進入遊戲時檢查是否有簽到獎勵
             if (tabId === 'game') updateGameBonus();
         }
@@ -1262,7 +1385,7 @@
                     .select('*')
                     .eq('user_id', currentUser.id)
                     .eq('check_in_date', today);
-                
+
                 hasCheckedInToday = (data && data.length > 0);
             } catch (e) { console.error(e); }
         }
@@ -1272,23 +1395,35 @@
             grid.innerHTML = '<div style="grid-column: span 4; padding: 20px;">載入中...</div>';
 
             try {
-                // 抓取最近 7 天的紀錄
-                const { data, error } = await sb
+                // 1. 抓取所有紀錄來算總天數與歷史
+                const { data: allData, error: allErr } = await sb
                     .from('check_ins')
                     .select('check_in_date')
                     .eq('user_id', currentUser.id)
-                    .order('check_in_date', { ascending: false })
-                    .limit(7);
-                
-                if (error) throw error;
-                userCheckInHistory = data.map(d => d.check_in_date);
+                    .order('check_in_date', { ascending: false });
+
+                if (allErr) throw allErr;
+
+                userCheckInHistory = allData.map(d => d.check_in_date);
+
+                // 更新總天數
+                document.getElementById('total-checkin-days').textContent = `${allData.length} 天`;
+
+                // 渲染 7 天格子
                 renderCheckInGrid();
+
+                // 渲染歷史紀錄清單
+                renderCheckInHistoryList(allData);
 
                 const btn = document.getElementById('btn-do-checkin');
                 if (hasCheckedInToday) {
                     btn.disabled = true;
                     btn.textContent = '今日已簽到';
                     btn.style.opacity = '0.5';
+                } else {
+                    btn.disabled = false;
+                    btn.textContent = '立即簽到';
+                    btn.style.opacity = '1';
                 }
             } catch (err) {
                 console.error(err);
@@ -1296,10 +1431,131 @@
             }
         }
 
+        function renderCheckInHistoryList(data) {
+            const listEl = document.getElementById('checkin-history-list');
+            if (!data || data.length === 0) {
+                listEl.innerHTML = '<div style="text-align:center; padding: 10px;">尚無簽到紀錄</div>';
+                return;
+            }
+            listEl.innerHTML = data.map(d => `
+                <div style="display:flex; justify-content:space-between; padding: 8px 0; border-bottom: 1px solid var(--border);">
+                    <span>📅 ${d.check_in_date}</span>
+                    <span style="color: var(--success); font-weight:600;">已簽到</span>
+                </div>
+            `).join('');
+        }
+
+        // Admin 簽到管理邏輯
+        let allCheckInStatus = [];
+        function switchCheckInMode(mode) {
+            const isMe = mode === 'me';
+            document.getElementById('checkin-toggle-me').classList.toggle('active', isMe);
+            document.getElementById('checkin-toggle-all').classList.toggle('active', !isMe);
+            document.getElementById('checkin-member-view').style.display = isMe ? 'block' : 'none';
+            document.getElementById('checkin-admin-view').style.display = isMe ? 'none' : 'block';
+
+            if (!isMe) fetchAllCheckInStatus();
+        }
+
+        async function fetchAllCheckInStatus() {
+            const listEl = document.getElementById('checkin-member-list');
+            listEl.innerHTML = '<div style="text-align:center; padding: 20px; color: var(--text-muted);">載入中...</div>';
+
+            try {
+                // 1. 抓取基本成員資料
+                const { data: users, error: userErr } = await sb
+                    .from('users')
+                    .select('id, email, display_name, role')
+                    .neq('role', 'admin')
+                    .order('email', { ascending: true });
+
+                if (userErr) throw userErr;
+
+                // 2. 抓取簽到統計視圖
+                const { data: stats, error: statsErr } = await sb
+                    .from('leaderboard_checkin')
+                    .select('*');
+
+                if (statsErr) throw statsErr;
+
+                // 合併資料
+                allCheckInStatus = users.map(u => {
+                    const stat = stats.find(s => s.display_name === u.display_name);
+                    return { ...u, total_checkins: stat ? stat.total_checkins : 0 };
+                });
+
+                renderCheckInMemberList(allCheckInStatus);
+            } catch (err) {
+                console.error(err);
+                listEl.innerHTML = '<div style="text-align:center; color: var(--error);">載入失敗: ' + err.message + '</div>';
+            }
+        }
+
+        function renderCheckInMemberList(data) {
+            const listEl = document.getElementById('checkin-member-list');
+            if (data.length === 0) {
+                listEl.innerHTML = '<div style="text-align:center; color: var(--text-muted); padding: 20px;">無資料</div>';
+                return;
+            }
+            listEl.innerHTML = data.map(u => `
+                <div class="member-list-item" onclick="showMemberCheckInHistory('${u.id}', '${escapeHTML(u.display_name)}')">
+                    <div class="member-info">
+                        <span class="member-name">${u.role === 'staff' ? '🛡️ ' : ''}${escapeHTML(u.display_name)}</span>
+                        <span class="member-id">${u.email.split('@')[0]}</span>
+                    </div>
+                    <div style="text-align: right;">
+                        <div style="font-weight: 700; color: var(--primary); font-size: 1.1rem;">${u.total_checkins} 天</div>
+                        <div style="font-size: 0.75rem; color: var(--text-muted);">累積簽到</div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        async function showMemberCheckInHistory(userId, displayName) {
+            document.getElementById('checkin-history-name').textContent = displayName;
+            openModal('modal-checkin-history');
+            const listEl = document.getElementById('checkin-history-detail');
+            listEl.innerHTML = '<div style="text-align:center; padding: 20px; color: var(--text-muted);">載入中...</div>';
+
+            try {
+                const { data, error } = await sb
+                    .from('check_ins')
+                    .select('check_in_date')
+                    .eq('user_id', userId)
+                    .order('check_in_date', { ascending: false });
+
+                if (error) throw error;
+
+                if (!data || data.length === 0) {
+                    listEl.innerHTML = '<div style="text-align:center; padding: 20px; color: var(--text-muted);">尚無簽到紀錄</div>';
+                    return;
+                }
+
+                listEl.innerHTML = data.map(d => `
+                    <div style="display:flex; justify-content:space-between; padding: 10px 0; border-bottom: 1px solid var(--border);">
+                        <span>📅 ${d.check_in_date}</span>
+                        <span style="color: var(--success); font-weight:600;">已簽到</span>
+                    </div>
+                `).join('');
+            } catch (err) {
+                console.error(err);
+                listEl.innerHTML = '<div style="text-align:center; color: var(--error);">載入失敗</div>';
+            }
+        }
+
+        function filterCheckInMembers() {
+            const query = document.getElementById('checkin-search').value.toLowerCase();
+            const filtered = allCheckInStatus.filter(u =>
+                u.display_name.toLowerCase().includes(query) ||
+                u.email.toLowerCase().includes(query)
+            );
+            renderCheckInMemberList(filtered);
+        }
+
         function renderCheckInGrid() {
             const grid = document.getElementById('checkin-grid');
             const today = new Date();
-            
+
             let html = '';
             // 顯示最近 7 天 (包含今天)
             for (let i = 6; i >= 0; i--) {
@@ -1308,7 +1564,7 @@
                 const dateStr = date.toISOString().split('T')[0];
                 const isChecked = userCheckInHistory.includes(dateStr);
                 const isToday = i === 0;
-                
+
                 html += `
                     <div class="checkin-day ${isChecked ? 'checked' : ''} ${isToday ? 'today' : ''}">
                         <div class="day-num">${date.getMonth() + 1}/${date.getDate()}</div>
@@ -1326,7 +1582,7 @@
                 const { error } = await sb.from('check_ins').insert({
                     user_id: currentUser.id
                 });
-                
+
                 if (error) {
                     if (error.code === '23505') alert('今日已簽到過囉！');
                     else throw error;
@@ -1344,7 +1600,7 @@
             const frame = document.getElementById('game-frame');
             const currentSrc = frame.src;
             const targetSrc = 'slot.html' + (hasCheckedInToday ? '?bonus=5' : '');
-            
+
             // 只有在參數不符時才重新載入
             if (!currentSrc.includes(targetSrc)) {
                 frame.src = targetSrc;
@@ -1381,6 +1637,7 @@
             currentLeaderboardType = type;
             document.getElementById('btn-leader-eval').classList.toggle('active', type === 'eval');
             document.getElementById('btn-leader-game').classList.toggle('active', type === 'game');
+            document.getElementById('btn-leader-checkin').classList.toggle('active', type === 'checkin');
             loadLeaderboard();
         }
 
@@ -1389,7 +1646,11 @@
             container.innerHTML = '<div style="text-align:center; padding: 40px; color: var(--text-muted);">載入中...</div>';
 
             try {
-                const table = currentLeaderboardType === 'eval' ? 'leaderboard_eval' : 'leaderboard_game';
+                let table;
+                if (currentLeaderboardType === 'eval') table = 'leaderboard_eval';
+                else if (currentLeaderboardType === 'game') table = 'leaderboard_game';
+                else table = 'leaderboard_checkin';
+
                 const { data, error } = await sb
                     .from(table)
                     .select('*')
@@ -1405,9 +1666,14 @@
                 container.innerHTML = data.map((item, index) => {
                     const rank = index + 1;
                     const rankClass = rank <= 3 ? `rank-${rank}` : '';
-                    const scoreValue = currentLeaderboardType === 'eval' ? item.total_score : item.game_max_spins;
+
+                    let scoreValue;
+                    if (currentLeaderboardType === 'eval') scoreValue = item.total_score;
+                    else if (currentLeaderboardType === 'game') scoreValue = item.game_max_spins;
+                    else scoreValue = item.total_checkins;
+
                     const scoreFormatted = Number(scoreValue).toLocaleString();
-                    const scoreLabel = currentLeaderboardType === 'game' ? ' 轉' : '';
+                    const scoreLabel = currentLeaderboardType === 'game' ? ' 轉' : (currentLeaderboardType === 'checkin' ? ' 天' : '');
                     const scoreClass = currentLeaderboardType === 'game' ? 'game' : '';
 
                     return `
@@ -1431,14 +1697,12 @@
         async function fetchAnnouncements() {
             const listEl = document.getElementById('announcement-list');
             try {
-                const { data, error } = await sb
-                    .from('announcements')
-                    .select(`*, users!announcements_author_id_fkey(display_name)`)
-                    .order('created_at', { ascending: false });
+                // 使用 RPC 函數取得公告（含作者名稱），不需要 JOIN users 表
+                const { data, error } = await sb.rpc('get_announcements_with_author');
 
                 if (error) throw error;
 
-                if (data.length === 0) {
+                if (!data || data.length === 0) {
                     listEl.innerHTML = '<div style="text-align:center; padding:40px; color:var(--text-muted);">目前沒有公告</div>';
                     return;
                 }
@@ -1454,7 +1718,7 @@
                         <div class="announcement-header">
                             <div class="announcement-title">${escapeHTML(ann.title)}</div>
                             <div class="announcement-meta">
-                                <div>${ann.users?.display_name || '系統'}</div>
+                                <div>${ann.author_name || '系統'}</div>
                                 <div>${new Date(ann.created_at).toLocaleDateString()}</div>
                             </div>
                         </div>
@@ -1666,24 +1930,23 @@
                 console.error('Error fetching evaluation:', err);
             }
 
-            // 載入自己的歷史紀錄
+            // 載入自己的歷史紀錄（使用 RPC 函數，不需 JOIN users 表）
             try {
-                const { data: logs } = await sb.from('score_logs')
-                    .select('*, operator:users!score_logs_created_by_fkey(display_name)')
-                    .eq('user_id', currentUser.id)
-                    .order('log_date', { ascending: false });
+                const { data: logs, error: logErr } = await sb.rpc('get_score_logs_with_names', { p_user_id: currentUser.id });
+                if (logErr) throw logErr;
                 const el = document.getElementById('member-log-history');
                 if (!logs || logs.length === 0) {
                     el.innerHTML = '<div style="text-align:center;color:var(--text-muted);padding:12px;">尚無紀錄</div>';
                 } else {
                     const catLabel = { base: '🎯 基本', interaction: '💬 互動', meeting: '🤝 見面' };
                     el.innerHTML = logs.map(log => {
-                        const opName = log.operator?.display_name || '系統';
+                        const opName = log.operator_name || '系統';
                         return `
                         <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 10px;border-bottom:1px solid var(--border);font-size:0.85rem;">
                             <div>
                                 <span>${catLabel[log.category] || log.category}</span>
                                 <span style="font-weight:700;color:var(--primary);margin-left:6px;">+${log.score}</span>
+                                ${log.partner_name ? `<span style="color:var(--primary-dark);margin-left:6px;font-weight:600;">(對象: ${escapeHTML(log.partner_name)})</span>` : ''}
                                 ${log.note ? `<span style="color:var(--text-muted);margin-left:6px;">(${escapeHTML(log.note)})</span>` : ''}
                             </div>
                             <div style="color:var(--text-muted);white-space:nowrap;text-align:right;">
@@ -1823,6 +2086,29 @@
             document.getElementById('log-score').value = 0;
             document.getElementById('log-note').value = '';
             document.getElementById('log-category').value = 'base';
+            document.getElementById('group-log-interaction').style.display = 'none';
+
+            // 填充互動對象勾選框（排除 admin 和目前被編輯的成員）
+            const partnerList = document.getElementById('interaction-partner-list');
+            partnerList.innerHTML = '';
+            if (allMembersData && allMembersData.length > 0) {
+                allMembersData
+                    .filter(m => m.id !== data.id) // 排除目標成員本人
+                    .forEach(m => {
+                        const label = document.createElement('label');
+                        label.style.cssText = 'display:flex; align-items:center; gap:6px; padding:6px 8px; border-radius:8px; cursor:pointer; font-size:0.85rem; transition:background 0.15s;';
+                        label.onmouseenter = () => label.style.background = 'var(--bg-input)';
+                        label.onmouseleave = () => label.style.background = 'transparent';
+                        const cb = document.createElement('input');
+                        cb.type = 'checkbox';
+                        cb.value = m.id;
+                        cb.dataset.name = m.display_name;
+                        cb.style.cssText = 'width:16px; height:16px; accent-color:var(--primary); cursor:pointer;';
+                        label.appendChild(cb);
+                        label.appendChild(document.createTextNode(`${m.role === 'staff' ? '🛡️ ' : ''}${m.display_name}`));
+                        partnerList.appendChild(label);
+                    });
+            }
 
             // 載入歷史紀錄
             loadScoreLogs(data.id);
@@ -1858,30 +2144,174 @@
             if (score <= 0) { alert('分數必須大於 0'); return; }
 
             try {
-                // 新增紀錄
-                const { error: logErr } = await sb.from('score_logs').insert({
-                    user_id: userId, category, score, log_date: logDate,
-                    note: note, created_by: currentUser.id
-                });
-                if (logErr) {
-                    if (logErr.message.includes('duplicate') || logErr.message.includes('unique') || logErr.code === '23505') {
-                        alert('❌ 錯誤：該成員在此日期已有相同類別的紀錄，不可重複！');
-                    } else {
-                        alert('新增失敗: ' + logErr.message);
+                if (category === 'interaction') {
+                    // === 互動分數：配對追蹤，自動排除已互動過的人 ===
+                    const checkboxes = document.querySelectorAll('#interaction-partner-list input[type="checkbox"]:checked');
+                    const selectedPartners = Array.from(checkboxes).map(cb => ({
+                        id: cb.value,
+                        name: cb.dataset.name
+                    }));
+
+                    if (selectedPartners.length === 0) {
+                        alert('請選擇至少一位互動對象');
+                        return;
                     }
-                    return;
+
+                    const targetName = document.getElementById('eval-modal-name').textContent;
+                    const allParticipants = [
+                        { id: userId, name: targetName },
+                        ...selectedPartners
+                    ];
+                    const participantIds = allParticipants.map(p => p.id);
+
+                    // 1. 查詢所有參與者之間已存在的互動配對
+                    const { data: existingPairs } = await sb.from('score_logs')
+                        .select('user_id, interaction_with')
+                        .eq('category', 'interaction')
+                        .in('user_id', participantIds);
+
+                    const existingSet = new Set(
+                        (existingPairs || []).map(p => `${p.user_id}__${p.interaction_with}`)
+                    );
+
+                    // 2. 產生所有新配對（排除已存在的）
+                    const newRecords = [];
+                    const skippedPairs = [];
+                    for (const participant of allParticipants) {
+                        for (const partner of allParticipants) {
+                            if (participant.id === partner.id) continue;
+                            const key = `${participant.id}__${partner.id}`;
+                            if (existingSet.has(key)) {
+                                skippedPairs.push(`${participant.name} ↔ ${partner.name}`);
+                            } else {
+                                newRecords.push({
+                                    user_id: participant.id,
+                                    interaction_with: partner.id,
+                                    category: 'interaction',
+                                    score: score,
+                                    log_date: logDate,
+                                    note: note || null,
+                                    created_by: currentUser.id
+                                });
+                            }
+                        }
+                    }
+
+                    if (newRecords.length === 0) {
+                        alert('⚠️ 所有參與者之間都已有互動紀錄，無需新增。');
+                        return;
+                    }
+
+                    // 3. 批次新增所有新配對
+                    const { error: batchErr } = await sb.from('score_logs').insert(newRecords);
+                    if (batchErr) {
+                        if (batchErr.code === '23505') {
+                            // 批次中有部分衝突，改為逐筆插入
+                            let insertedCount = 0;
+                            const conflictPairs = [];
+                            for (const rec of newRecords) {
+                                const { error: singleErr } = await sb.from('score_logs').insert(rec);
+                                if (singleErr) {
+                                    if (singleErr.code === '23505') {
+                                        const pName = allParticipants.find(p => p.id === rec.user_id)?.name || '?';
+                                        const partnerName = allParticipants.find(p => p.id === rec.interaction_with)?.name || '?';
+                                        conflictPairs.push(`${pName} ↔ ${partnerName}`);
+                                    } else {
+                                        throw singleErr;
+                                    }
+                                } else {
+                                    insertedCount++;
+                                }
+                            }
+                            if (conflictPairs.length > 0) {
+                                const uniqueConflicts = [...new Set(conflictPairs)];
+                                alert(`⚠️ 部分配對已存在，已自動略過：\n${uniqueConflicts.filter((_, i) => i % 2 === 0).join('\n')}\n\n✅ 成功新增 ${insertedCount} 筆新紀錄。`);
+                            }
+                            // 只更新成功插入的紀錄
+                            newRecords = newRecords.filter(rec => {
+                                const key = `${rec.user_id}__${rec.interaction_with}`;
+                                return !conflictPairs.some(cp => {
+                                    const pName = allParticipants.find(p => p.id === rec.user_id)?.name;
+                                    const partnerName = allParticipants.find(p => p.id === rec.interaction_with)?.name;
+                                    return cp === `${pName} ↔ ${partnerName}`;
+                                });
+                            });
+                            if (newRecords.length === 0) return;
+                        } else {
+                            alert(`❌ 新增互動紀錄失敗：${batchErr.message}`);
+                            return;
+                        }
+                    }
+
+                    // 4. 更新每位參與者的 evaluations 總分
+                    const newPairsPerUser = {};
+                    for (const rec of newRecords) {
+                        newPairsPerUser[rec.user_id] = (newPairsPerUser[rec.user_id] || 0) + 1;
+                    }
+                    for (const [uid, count] of Object.entries(newPairsPerUser)) {
+                        const { data: evalData, error: evalReadErr } = await sb.from('evaluations')
+                            .select('interaction_score')
+                            .eq('user_id', uid)
+                            .single();
+                        if (evalReadErr && evalReadErr.code !== 'PGRST116') {
+                            alert(`⚠️ 讀取 ${allParticipants.find(p => p.id === uid)?.name || uid} 的考核資料失敗：${evalReadErr.message}`);
+                            continue;
+                        }
+                        const newTotal = (evalData?.interaction_score || 0) + (score * count);
+                        const { error: evalUpdateErr } = await sb.from('evaluations').update({
+                            interaction_score: newTotal,
+                            updated_at: new Date().toISOString()
+                        }).eq('user_id', uid);
+                        if (evalUpdateErr) {
+                            alert(`⚠️ 更新 ${allParticipants.find(p => p.id === uid)?.name || uid} 的分數失敗：${evalUpdateErr.message}`);
+                        }
+                    }
+
+                    // 5. 報告結果
+                    if (!batchErr) {
+                        const uniqueSkipped = [...new Set(skippedPairs)];
+                        const newPairCount = newRecords.length / 2;
+                        let msg = `✅ 已新增 ${newRecords.length} 筆互動紀錄（${Math.round(newPairCount)} 組配對）！`;
+                        if (uniqueSkipped.length > 0) {
+                            msg += `\n\n⚠️ 以下配對已存在，已自動略過：\n${uniqueSkipped.filter((_, i) => i % 2 === 0).join('\n')}`;
+                        }
+                        alert(msg);
+                    }
+
+                } else {
+                    // === 基本 / 見面：單一紀錄（原始邏輯） ===
+                    const { error: logErr } = await sb.from('score_logs').insert({
+                        user_id: userId, category, score, log_date: logDate,
+                        note: note, created_by: currentUser.id
+                    });
+                    if (logErr) {
+                        if (logErr.code === '23505' || logErr.message?.includes('duplicate') || logErr.message?.includes('unique')) {
+                            alert('❌ 錯誤：該成員在此日期已有相同類別的紀錄，不可重複！');
+                        } else {
+                            alert('新增失敗: ' + logErr.message);
+                        }
+                        return;
+                    }
+
+                    // 累加到 evaluations 總分
+                    const scoreField = category === 'base' ? 'base_score' : 'meeting_score';
+                    const { data: evalData, error: evalReadErr } = await sb.from('evaluations').select(scoreField).eq('user_id', userId).single();
+                    if (evalReadErr && evalReadErr.code !== 'PGRST116') {
+                        alert(`⚠️ 紀錄已新增，但讀取考核資料失敗：${evalReadErr.message}`);
+                    } else {
+                        const newTotal = (evalData?.[scoreField] || 0) + score;
+                        const { error: evalUpdateErr } = await sb.from('evaluations').update({ [scoreField]: newTotal, updated_at: new Date().toISOString() }).eq('user_id', userId);
+                        if (evalUpdateErr) {
+                            alert(`⚠️ 紀錄已新增，但更新考核總分失敗：${evalUpdateErr.message}`);
+                        }
+                    }
+
+                    alert('✅ 紀錄已新增！');
                 }
 
-                // 累加到 evaluations 總分
-                const scoreField = category === 'base' ? 'base_score' : category === 'interaction' ? 'interaction_score' : 'meeting_score';
-                const { data: evalData } = await sb.from('evaluations').select(scoreField).eq('user_id', userId).single();
-                const newTotal = (evalData?.[scoreField] || 0) + score;
-                await sb.from('evaluations').update({ [scoreField]: newTotal, updated_at: new Date().toISOString() }).eq('user_id', userId);
-
-                // 刷新
+                // 刷新顯示
                 loadScoreLogs(userId);
                 fetchAllEvaluations();
-                // 更新摘要
                 const { data: freshEval } = await sb.from('evaluations').select('*').eq('user_id', userId).single();
                 if (freshEval) {
                     document.getElementById('eval-sum-base').textContent = `${freshEval.base_score}/${freshEval.base_threshold}`;
@@ -1890,7 +2320,8 @@
                 }
                 document.getElementById('log-score').value = 0;
                 document.getElementById('log-note').value = '';
-                alert('✅ 紀錄已新增！');
+                // 取消所有勾選
+                document.querySelectorAll('#interaction-partner-list input[type="checkbox"]').forEach(cb => cb.checked = false);
             } catch (err) {
                 alert('操作失敗: ' + err.message);
             }
@@ -1901,22 +2332,21 @@
         async function loadScoreLogs(userId) {
             const el = document.getElementById('log-history');
             try {
-                const { data, error } = await sb.from('score_logs')
-                    .select('*, operator:users!score_logs_created_by_fkey(display_name)')
-                    .eq('user_id', userId)
-                    .order('log_date', { ascending: false });
+                // 使用 RPC 函數取得紀錄（含操作者名稱），不需 JOIN users 表
+                const { data, error } = await sb.rpc('get_score_logs_with_names', { p_user_id: userId });
                 if (error) throw error;
                 if (!data || data.length === 0) {
                     el.innerHTML = '<div style="text-align:center;color:var(--text-muted);padding:12px;">尚無紀錄</div>';
                     return;
                 }
                 el.innerHTML = data.map(log => {
-                    const opName = log.operator?.display_name || '系統';
+                    const opName = log.operator_name || '系統';
                     return `
                     <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 10px;border-bottom:1px solid var(--border);font-size:0.85rem;">
                         <div>
                             <span>${categoryLabel[log.category] || log.category}</span>
                             <span style="font-weight:700;color:var(--primary);margin-left:6px;">+${log.score}</span>
+                            ${log.partner_name ? `<span style="color:var(--primary-dark);margin-left:6px;font-weight:600;">(對象: ${escapeHTML(log.partner_name)})</span>` : ''}
                             ${log.note ? `<span style="color:var(--text-muted);margin-left:6px;">(${escapeHTML(log.note)})</span>` : ''}
                         </div>
                         <div style="color:var(--text-muted);white-space:nowrap;text-align:right;">
