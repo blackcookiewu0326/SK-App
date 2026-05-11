@@ -670,6 +670,7 @@
             </div>
 
             <div class="auto-btn-wrapper">
+                <button id="cash-out-btn" class="auto-btn" style="background: linear-gradient(to bottom, #27ae60, #2ecc71); margin-right: 10px; border-color: #2ecc71;" onclick="cashOut()">見好就收</button>
                 <button id="auto-btn" class="auto-btn" onclick="toggleAuto()">AUTO</button>
             </div>
 
@@ -713,8 +714,8 @@
                 <div class="modal-stat-row"><span style="color: #95a5a6;">槓龜次數</span> <span id="modal-lose"
                         style="color: #95a5a6;">0</span></div>
 
-                <button class="auto-btn" style="width: 100%; border-color: var(--primary-color); margin-top: 20px;"
-                    onclick="resetGame()">蘭葛格借我2000，再次挑戰</button>
+                <button id="borrow-btn" class="auto-btn" style="width: 100%; border-color: var(--primary-color); margin-top: 20px;"
+                    onclick="requestBorrow()">花費 1 考核積分借 2000 元</button>
             </div>
         </div>
     </div>
@@ -724,15 +725,33 @@
         const numHeight = 70;
 
         // 遊戲狀態變數
-        const urlParams = new URLSearchParams(window.location.search);
-        const bonusSpins = parseInt(urlParams.get('bonus')) || 0;
-        
-        let score = 2000 + (bonusSpins * 200); // 每一轉價值 200
+        let score = 0; // 改由主程式傳入
         const spinCost = 200;
         let isSpinning = false;
         let isAutoMode = false;
         let freeSpinsLeft = 0; // 免費轉數次數
         let lightsInterval;
+        let gameReady = false;
+
+        // 監聽主程式訊息
+        window.addEventListener('message', (event) => {
+            const data = event.data;
+            if (data.type === 'INIT_BALANCE') {
+                score = data.balance;
+                gameReady = true;
+                updateStatsUI();
+            } else if (data.type === 'BORROW_SUCCESS') {
+                score = data.balance;
+                document.getElementById('borrow-btn').innerText = '花費 1 考核積分借 2000 元';
+                document.getElementById('borrow-btn').disabled = false;
+                resetGame();
+            } else if (data.type === 'BORROW_REJECTED') {
+                document.getElementById('borrow-btn').innerText = '花費 1 考核積分借 2000 元';
+                document.getElementById('borrow-btn').disabled = false;
+            } else if (data.type === 'FORCE_SAVE_REQUEST') {
+                window.parent.postMessage({ type: 'SAVE_BALANCE', balance: score, silent: true }, '*');
+            }
+        });
 
         // 統計數據變數
         let statSpins = 0, statSpent = 0, statWon = 0;
@@ -796,6 +815,9 @@
             });
             startNormalLights();
             updateStatsUI();
+
+            // 通知主程式遊戲準備就緒
+            window.parent.postMessage({ type: 'GAME_READY' }, '*');
         }
 
         function startNormalLights() {
@@ -871,7 +893,7 @@
         }
 
         async function spin() {
-            if (isSpinning) return;
+            if (isSpinning || !gameReady) return;
 
             // 擋下餘額不足的情形 (除非還有免費旋轉)
             if (freeSpinsLeft <= 0 && score < spinCost) {
@@ -1071,15 +1093,14 @@
             document.getElementById('modal-s7').innerText = cS7;
             document.getElementById('modal-lose').innerText = cLose;
 
-            // 將總轉數回傳給主頁面以更新排行榜
-            window.parent.postMessage({ type: 'GAME_SCORE', score: statSpins }, '*');
+            // 破產時自動同步儲存最新餘額
+            window.parent.postMessage({ type: 'SAVE_BALANCE', balance: score, silent: true }, '*');
 
             document.getElementById('game-over-modal').classList.add('active');
         }
 
-        // 重置遊戲
+        // 重置遊戲介面 (分數保留)
         function resetGame() {
-            score = 2000 + (bonusSpins * 200);
             freeSpinsLeft = 0;
             statSpins = 0; statSpent = 0; statWon = 0;
             cJackpot = 0; cTriple = 0; cD7 = 0; cD7x = 0; cDouble = 0; cS7 = 0; cLose = 0;
@@ -1092,6 +1113,24 @@
             document.getElementById('joystick').style.pointerEvents = 'auto';
             document.getElementById('win-prompt').innerText = "等待開獎...";
             document.getElementById('game-card').classList.remove('jackpot');
+        }
+
+        function cashOut() {
+            if (isSpinning || !gameReady) return;
+            if (isAutoMode) toggleAuto();
+            
+            // 通知主系統儲存
+            window.parent.postMessage({ type: 'SAVE_BALANCE', balance: score, silent: false }, '*');
+            
+            const prompt = document.getElementById('win-prompt');
+            prompt.innerHTML = `<span style="color:#2ecc71;">✅ 已見好就收！目前餘額：${score}</span>`;
+            prompt.style.borderColor = '#2ecc71';
+        }
+
+        function requestBorrow() {
+            document.getElementById('borrow-btn').innerText = '審核借款中...';
+            document.getElementById('borrow-btn').disabled = true;
+            window.parent.postMessage({ type: 'BORROW_FUNDS' }, '*');
         }
 
         window.onload = initReels;
