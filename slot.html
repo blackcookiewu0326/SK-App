@@ -750,6 +750,10 @@
                 document.getElementById('borrow-btn').disabled = false;
             } else if (data.type === 'FORCE_SAVE_REQUEST') {
                 window.parent.postMessage({ type: 'SAVE_BALANCE', balance: score, silent: true }, '*');
+            } else if (data.type === 'ADD_BALANCE') {
+                // 從外部即時增加遊戲資金
+                score += data.amount;
+                updateStatsUI();
             }
         });
 

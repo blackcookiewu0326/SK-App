@@ -1645,6 +1645,9 @@
                     const newBalance = (uData?.game_balance || 0) + 1000;
                     await sb.from('users').update({ game_balance: newBalance }).eq('id', currentUser.id);
 
+                    // 即時通知遊戲機台增加餘額
+                    notifyGameBalanceAdded(1000);
+
                     alert('✅ 簽到成功！個人帳戶資金 +1000');
                     hasCheckedInToday = true;
                     loadCheckInData();
@@ -1661,6 +1664,14 @@
             // 確保遊戲機台正確載入
             if (!frame.src.includes(targetSrc)) {
                 frame.src = targetSrc;
+            }
+        }
+
+        // 用於從外部即時增加遊戲畫面的資金餘額顯示
+        function notifyGameBalanceAdded(amount) {
+            const frame = document.getElementById('game-frame');
+            if (frame && frame.contentWindow) {
+                frame.contentWindow.postMessage({ type: 'ADD_BALANCE', amount: amount }, '*');
             }
         }
 
@@ -2328,8 +2339,14 @@
 
                         // 更新遊戲資金 (+200 / 分)，互動分數權重為 3
                         const { data: uData } = await sb.from('users').select('game_balance').eq('id', uid).single();
-                        const newBalance = (uData?.game_balance || 0) + (addedScore * 3 * 200);
+                        const addedFunds = addedScore * 3 * 200;
+                        const newBalance = (uData?.game_balance || 0) + addedFunds;
                         await sb.from('users').update({ game_balance: newBalance }).eq('id', uid);
+
+                        // 若是對自己加分，即時通知遊戲更新
+                        if (uid === currentUser.id) {
+                            notifyGameBalanceAdded(addedFunds);
+                        }
                     }
 
                     // 5. 報告結果
@@ -2377,6 +2394,11 @@
                     const { data: uData } = await sb.from('users').select('game_balance').eq('id', userId).single();
                     const newBalance = (uData?.game_balance || 0) + addedFunds;
                     await sb.from('users').update({ game_balance: newBalance }).eq('id', userId);
+
+                    // 若是對自己加分，即時通知遊戲更新
+                    if (userId === currentUser.id) {
+                        notifyGameBalanceAdded(addedFunds);
+                    }
 
                     alert(`✅ 紀錄已新增！資金增加 ${addedFunds} 元`);
                 }
