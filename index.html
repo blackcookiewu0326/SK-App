@@ -1998,14 +1998,19 @@
                 if (!logs || logs.length === 0) {
                     el.innerHTML = '<div style="text-align:center;color:var(--text-muted);padding:12px;">尚無紀錄</div>';
                 } else {
-                    const catLabel = { base: '🎯 基本', interaction: '💬 互動', meeting: '🤝 見面' };
+                    const catLabel = { 
+                        base: '🎯 基本', 
+                        interaction: '💬 互動', 
+                        meeting: '🤝 團長', 
+                        penalty: '💀 爛咖' 
+                    };
                     el.innerHTML = logs.map(log => {
                         const opName = log.operator_name || '系統';
                         return `
                         <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 10px;border-bottom:1px solid var(--border);font-size:0.85rem;">
                             <div>
                                 <span>${catLabel[log.category] || log.category}</span>
-                                <span style="font-weight:700;color:var(--primary);margin-left:6px;">+${log.score}</span>
+                                <span style="font-weight:700;color:var(--primary);margin-left:6px;">${log.score > 0 ? '+' : ''}${log.score}</span>
                                 ${log.partner_name ? `<span style="color:var(--primary-dark);margin-left:6px;font-weight:600;">(對象: ${escapeHTML(log.partner_name)})</span>` : ''}
                                 ${log.note ? `<span style="color:var(--text-muted);margin-left:6px;">(${escapeHTML(log.note)})</span>` : ''}
                             </div>
@@ -2422,7 +2427,12 @@
             }
         }
 
-        const categoryLabel = { base: '🎯 基本', interaction: '💬 互動', meeting: '🤝 見面' };
+        const categoryLabel = { 
+            base: '🎯 基本', 
+            interaction: '💬 互動', 
+            meeting: '🤝 團長', 
+            penalty: '💀 爛咖' 
+        };
 
         async function loadScoreLogs(userId) {
             const el = document.getElementById('log-history');
@@ -2440,7 +2450,7 @@
                     <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 10px;border-bottom:1px solid var(--border);font-size:0.85rem;">
                         <div>
                             <span>${categoryLabel[log.category] || log.category}</span>
-                            <span style="font-weight:700;color:var(--primary);margin-left:6px;">+${log.score}</span>
+                            <span style="font-weight:700;color:var(--primary);margin-left:6px;">${log.score > 0 ? '+' : ''}${log.score}</span>
                             ${log.partner_name ? `<span style="color:var(--primary-dark);margin-left:6px;font-weight:600;">(對象: ${escapeHTML(log.partner_name)})</span>` : ''}
                             ${log.note ? `<span style="color:var(--text-muted);margin-left:6px;">(${escapeHTML(log.note)})</span>` : ''}
                         </div>

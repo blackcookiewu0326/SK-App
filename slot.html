@@ -32,7 +32,8 @@
             background-color: #2c3e50;
             width: 95%;
             max-width: 450px;
-            margin: 10px auto 120px auto; /* 增加底部外邊距 */
+            margin: 10px auto 120px auto;
+            /* 增加底部外邊距 */
             padding: 1rem;
             border-radius: 20px;
             display: flex;
@@ -53,7 +54,7 @@
             box-shadow: 0 0 20px #3498db, inset 0 0 20px rgba(52, 152, 219, 0.4);
             animation: icePulse 1.5s infinite;
         }
-        
+
         .game-card.jackpot {
             animation: jackpotFlash 0.3s infinite, shake 0.4s infinite !important;
             border-width: 6px;
@@ -61,9 +62,17 @@
         }
 
         @keyframes icePulse {
-            0% { box-shadow: 0 0 15px #3498db; }
-            50% { box-shadow: 0 0 30px #5dade2, inset 0 0 10px #fff; }
-            100% { box-shadow: 0 0 15px #3498db; }
+            0% {
+                box-shadow: 0 0 15px #3498db;
+            }
+
+            50% {
+                box-shadow: 0 0 30px #5dade2, inset 0 0 10px #fff;
+            }
+
+            100% {
+                box-shadow: 0 0 15px #3498db;
+            }
         }
 
         .game-card.frozen::before {
@@ -129,7 +138,8 @@
         /* 控制面板資訊區 */
         .control-panel {
             display: grid;
-            grid-template-columns: repeat(2, 1fr); /* 兩欄排版 */
+            grid-template-columns: repeat(2, 1fr);
+            /* 兩欄排版 */
             gap: 8px;
             background: rgba(0, 0, 0, 0.6);
             padding: 10px;
@@ -666,11 +676,13 @@
         <div class="bottom-controls">
             <div class="credit-display">
                 <div class="label">CREDIT</div>
-                <div class="val" id="bottom-score">2000</div>
+                <div class="val" id="bottom-score">載入中...</div>
             </div>
 
             <div class="auto-btn-wrapper">
-                <button id="cash-out-btn" class="auto-btn" style="background: linear-gradient(to bottom, #27ae60, #2ecc71); margin-right: 10px; border-color: #2ecc71;" onclick="cashOut()">見好就收</button>
+                <button id="cash-out-btn" class="auto-btn"
+                    style="background: linear-gradient(to bottom, #27ae60, #2ecc71); margin-right: 10px; border-color: #2ecc71;"
+                    onclick="cashOut()">見好就收</button>
                 <button id="auto-btn" class="auto-btn" onclick="toggleAuto()">AUTO</button>
             </div>
 
@@ -714,7 +726,8 @@
                 <div class="modal-stat-row"><span style="color: #95a5a6;">槓龜次數</span> <span id="modal-lose"
                         style="color: #95a5a6;">0</span></div>
 
-                <button id="borrow-btn" class="auto-btn" style="width: 100%; border-color: var(--primary-color); margin-top: 20px;"
+                <button id="borrow-btn" class="auto-btn"
+                    style="width: 100%; border-color: var(--primary-color); margin-top: 20px;"
                     onclick="requestBorrow()">花費 1 考核積分借 2000 元</button>
             </div>
         </div>
@@ -863,7 +876,7 @@
             // 顯示免費旋轉提示
             const prompt = document.getElementById('win-prompt');
             const gameCard = document.getElementById('game-card');
-            
+
             if (freeSpinsLeft > 0) {
                 gameCard.classList.add('frozen');
                 if (!isSpinning) {
@@ -912,7 +925,7 @@
             document.querySelectorAll('.flash-blue, .flash-gold').forEach(el => el.classList.remove('flash-blue', 'flash-gold'));
 
             statSpins++;
-            
+
             if (freeSpinsLeft > 0) {
                 freeSpinsLeft--;
                 // 免費旋轉：不扣 CREDIT，不增加總投入
@@ -1122,10 +1135,10 @@
         function cashOut() {
             if (isSpinning || !gameReady) return;
             if (isAutoMode) toggleAuto();
-            
+
             // 通知主系統儲存
             window.parent.postMessage({ type: 'SAVE_BALANCE', balance: score, silent: false }, '*');
-            
+
             const prompt = document.getElementById('win-prompt');
             prompt.innerHTML = `<span style="color:#2ecc71;">✅ 已見好就收！目前餘額：${score}</span>`;
             prompt.style.borderColor = '#2ecc71';
