@@ -1220,8 +1220,9 @@
                 <h3 class="modal-title" id="read-modal-title">公告已讀名單</h3>
                 <button class="modal-close" onclick="closeModal('modal-read-status')">×</button>
             </div>
+            <div class="modal-body" id="read-status-list" style="max-height: 400px; overflow-y: auto;">
+            </div>
         </div>
-    </div>
     </div>
 
     <!-- 模態框：檢視成員簽到歷史 -->
@@ -1793,11 +1794,18 @@
                         
                         <div class="announcement-actions" style="display:flex;">
                             <button class="action-btn" id="btn-read-${ann.id}" onclick="markAsRead('${ann.id}')" ${readIds.has(ann.id) ? 'disabled style="opacity:0.5;cursor:default;"' : ''}>${readIds.has(ann.id) ? '✅ 已讀' : '✔️ 標記已讀'}</button>
-                            ${isAdminOrStaff ? `<button class="action-btn" onclick="viewReadStatus('${ann.id}', '${escapeHTML(ann.title).replace(/'/g, "\\'")}')">檢視名單</button>` : ''}
+                            ${isAdminOrStaff ? '<button class="action-btn btn-view-read" data-ann-id="' + ann.id + '" data-ann-title="' + escapeHTML(ann.title) + '">檢視名單</button>' : ''}
                             ${isAdminOrStaff ? `<button class="action-btn delete" onclick="deleteAnnouncement('${ann.id}')">刪除</button>` : ''}
                         </div>
                     </div>
                 `).join('');
+
+                // 綁定「檢視名單」按鈕事件
+                document.querySelectorAll('.btn-view-read').forEach(btn => {
+                    btn.addEventListener('click', function() {
+                        viewReadStatus(this.dataset.annId, this.dataset.annTitle);
+                    });
+                });
 
             } catch (err) {
                 console.error(err);
