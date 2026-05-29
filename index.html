@@ -2190,9 +2190,10 @@
                         cb.type = 'checkbox';
                         cb.value = m.id;
                         cb.dataset.name = m.display_name;
+                        cb.dataset.role = m.role;
                         cb.style.cssText = 'width:16px; height:16px; accent-color:var(--primary); cursor:pointer;';
                         label.appendChild(cb);
-                        label.appendChild(document.createTextNode(`${m.role === 'staff' ? '🛡️ ' : ''}${m.display_name}`));
+                        label.appendChild(document.createTextNode(`${m.role === 'admin' ? '👑 ' : m.role === 'staff' ? '🛡️ ' : ''}${m.display_name}`));
                         partnerList.appendChild(label);
                     });
             }
@@ -2241,7 +2242,8 @@
                     const checkboxes = document.querySelectorAll('#interaction-partner-list input[type="checkbox"]:checked');
                     const selectedPartners = Array.from(checkboxes).map(cb => ({
                         id: cb.value,
-                        name: cb.dataset.name
+                        name: cb.dataset.name,
+                        role: cb.dataset.role || 'member'
                     }));
 
                     if (selectedPartners.length === 0) {
@@ -2250,8 +2252,9 @@
                     }
 
                     const targetName = document.getElementById('eval-modal-name').textContent;
+                    const targetRole = (allMembersData || []).find(m => m.id === userId)?.role || 'member';
                     const allParticipants = [
-                        { id: userId, name: targetName },
+                        { id: userId, name: targetName, role: targetRole },
                         ...selectedPartners
                     ];
                     const participantIds = allParticipants.map(p => p.id);
@@ -2273,7 +2276,9 @@
                         for (const partner of allParticipants) {
                             if (participant.id === partner.id) continue;
                             const key = `${participant.id}__${partner.id}`;
-                            if (existingSet.has(key)) {
+                            // 與 admin 互動不限次數，跳過重複檢查
+                            const involvesAdmin = participant.role === 'admin' || partner.role === 'admin';
+                            if (!involvesAdmin && existingSet.has(key)) {
                                 skippedPairs.push(`${participant.name} ↔ ${partner.name}`);
                             } else {
                                 newRecords.push({
